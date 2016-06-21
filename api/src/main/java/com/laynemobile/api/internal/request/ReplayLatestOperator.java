@@ -16,9 +16,10 @@
 
 package com.laynemobile.api.internal.request;
 
+import com.laynemobile.api.internal.ApiLog;
+
 import java.util.concurrent.atomic.AtomicReference;
 
-import com.laynemobile.api.internal.ApiLog;
 import rx.Notification;
 import rx.Observable;
 import rx.Subscriber;

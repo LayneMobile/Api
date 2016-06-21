@@ -16,13 +16,14 @@
 
 package com.laynemobile.api.sources.modules;
 
-import com.laynemobile.api.params.SimpleParams;
-import com.laynemobile.api.sources.AggregableSource;
-import com.laynemobile.api.sources.SourceHandler;
 import com.laynemobile.api.Aggregable;
 import com.laynemobile.api.aggregables.SimpleAggregable;
 import com.laynemobile.api.annotations.SourceHandlerModule;
+import com.laynemobile.api.params.SimpleParams;
+import com.laynemobile.api.sources.AggregableSource;
+import com.laynemobile.api.sources.SourceHandler;
 import com.laynemobile.api.sources.SourceHandlerBuilder;
+
 import rx.functions.Func1;
 
 @SourceHandlerModule(AggregableSource.class)

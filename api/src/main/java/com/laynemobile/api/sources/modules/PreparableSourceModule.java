@@ -17,15 +17,15 @@
 package com.laynemobile.api.sources.modules;
 
 import com.laynemobile.api.Params;
-import com.laynemobile.api.types.MethodHandler;
-
-import java.lang.reflect.Method;
-
 import com.laynemobile.api.annotations.SourceHandlerModule;
 import com.laynemobile.api.sources.PreparableSource;
 import com.laynemobile.api.sources.SourceHandler;
 import com.laynemobile.api.sources.SourceHandlerBuilder;
+import com.laynemobile.api.types.MethodHandler;
 import com.laynemobile.api.types.MethodResult;
+
+import java.lang.reflect.Method;
+
 import rx.Observable;
 import rx.functions.Func2;
 

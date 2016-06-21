@@ -18,7 +18,6 @@ package com.laynemobile.api.sources.modules;
 
 import com.laynemobile.api.Params;
 import com.laynemobile.api.Source;
-import com.laynemobile.api.annotations.SourceHandlerModule;
 import com.laynemobile.api.sources.SourceHandler;
 import com.laynemobile.api.sources.SourceHandlerBuilder;
 import com.laynemobile.api.types.MethodHandler;
@@ -30,16 +29,15 @@ import rx.Subscriber;
 import rx.functions.Action2;
 import rx.functions.Func1;
 
-@SourceHandlerModule(Source.class)
-public final class SourceModule<T, P extends Params> implements SourceHandlerBuilder {
+public final class SourceModule2<T, P extends Params> implements SourceHandlerBuilder {
     private Action2<P, Subscriber<? super T>> source;
 
-    public SourceModule<T, P> source(Action2<P, Subscriber<? super T>> source) {
+    public SourceModule2<T, P> source(Action2<P, Subscriber<? super T>> source) {
         this.source = source;
         return this;
     }
 
-    public SourceModule<T, P> source(Func1<P, T> source) {
+    public SourceModule2<T, P> source(Func1<P, T> source) {
         return sourceInternal(this, source);
     }
 
@@ -52,7 +50,7 @@ public final class SourceModule<T, P extends Params> implements SourceHandlerBui
                 .build();
     }
 
-    private static <T, P extends Params> SourceModule<T, P> sourceInternal(SourceModule<T, P> module,
+    private static <T, P extends Params> SourceModule2<T, P> sourceInternal(SourceModule2<T, P> module,
             final Func1<P, T> source) {
         // Create anonymous inner class in static context to avoid holding Module instance in memory
         return module.source(new Action2<P, Subscriber<? super T>>() {

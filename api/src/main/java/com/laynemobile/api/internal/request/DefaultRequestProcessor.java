@@ -17,10 +17,10 @@
 package com.laynemobile.api.internal.request;
 
 import com.laynemobile.api.Params;
-import com.laynemobile.api.sources.AggregableSource;
 import com.laynemobile.api.Request;
 import com.laynemobile.api.Source;
 import com.laynemobile.api.SourceProcessor;
+import com.laynemobile.api.sources.AggregableSource;
 
 import rx.Observable;
 

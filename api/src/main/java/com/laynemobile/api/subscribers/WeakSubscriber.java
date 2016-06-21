@@ -16,9 +16,10 @@
 
 package com.laynemobile.api.subscribers;
 
+import com.laynemobile.api.annotations.Keep;
+
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
-import com.laynemobile.api.annotations.Keep;
 import rx.Observer;
 import rx.Producer;
 import rx.Subscriber;

@@ -17,14 +17,15 @@
 package com.laynemobile.api.internal.request;
 
 import com.laynemobile.api.Params;
-import com.laynemobile.api.params.NetworkParams;
 import com.laynemobile.api.Source;
 import com.laynemobile.api.SourceProcessor;
 import com.laynemobile.api.exceptions.NetworkUnavailableException;
 import com.laynemobile.api.internal.ApiLog;
+import com.laynemobile.api.params.NetworkParams;
 import com.laynemobile.api.sources.NetworkSource;
 import com.laynemobile.api.sources.PreparableSource;
 import com.laynemobile.api.util.NetworkChecker;
+
 import rx.Observable;
 import rx.Subscriber;
 
@@ -71,6 +72,44 @@ class DefaultSourceProcessor<T, P extends Params> {
             }
         };
     }
+
+    /*
+
+    steps :
+
+    Source {
+        void call(P params, Subscriber<? super T> subscriber);
+
+        -> Observable<T> observable = from(source.call(p, subscriber));
+
+        Internal {
+            Observable<T> request(P p);
+        }
+    }
+
+    NetworkSource extends Source {
+        NetworkChecker networkChecker();
+
+        Internal {
+            Observable<T> request (P p, NetworkSource s, Observable<T> request) {
+                if (!hasNetwork(s.networkChecker())) {
+                    return Observable.error();
+                } else {
+                    return request;
+                }
+            }
+        }
+    }
+
+    PreparableSource extends Source {
+        Observable<T> prepareSource(Observable<T> source);
+
+
+    }
+
+    Request<T> request = processor.request(P params);
+
+     */
 
     private final class OnSubscribeImpl implements Observable.OnSubscribe<T> {
         private final P p;

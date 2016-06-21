@@ -16,14 +16,15 @@
 
 package com.laynemobile.api.internal.request;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-import java.util.concurrent.atomic.AtomicReference;
-
 import com.laynemobile.api.Aggregable;
 import com.laynemobile.api.annotations.Keep;
 import com.laynemobile.api.exceptions.SourceCancelledException;
 import com.laynemobile.api.internal.ApiLog;
+
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+import java.util.concurrent.atomic.AtomicReference;
+
 import rx.Notification;
 import rx.Observable;
 import rx.Subscriber;

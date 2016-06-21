@@ -16,10 +16,11 @@
 
 package com.laynemobile.api.subscribers;
 
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
-
 import com.laynemobile.api.annotations.Keep;
 import com.laynemobile.api.exceptions.ApiException;
+
+import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
+
 import rx.Subscriber;
 
 public abstract class ApiSubscriber<T> extends NotifyingSubscriber<T> {

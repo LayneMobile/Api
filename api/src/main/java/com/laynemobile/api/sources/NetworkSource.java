@@ -17,9 +17,36 @@
 package com.laynemobile.api.sources;
 
 import com.laynemobile.api.Params;
+import com.laynemobile.api.Request;
 import com.laynemobile.api.Source;
+import com.laynemobile.api.exceptions.NetworkUnavailableException;
+import com.laynemobile.api.experimental.Processor;
+import com.laynemobile.api.experimental.RequestProcessor;
+import com.laynemobile.api.internal.ApiLog;
 import com.laynemobile.api.util.NetworkChecker;
 
 public interface NetworkSource<T, P extends Params> extends Source<T, P> {
     NetworkChecker getNetworkChecker();
+
+    class Transformer<T, P extends Params> implements Processor.Interceptor.Transformer<NetworkSource<T, P>, RequestProcessor.Interceptor<T, P>> {
+        private static final String TAG = Transformer.class.getSimpleName();
+
+        @Override public RequestProcessor.Interceptor<T, P> call(final NetworkSource<T, P> source) {
+            return new RequestProcessor.Interceptor<T, P>() {
+                @Override public Request<T> intercept(Processor.Interceptor.Chain<P, Request<T>> chain) {
+                    P p = chain.params();
+                    ApiLog.d(TAG, "checking network connection");
+                    NetworkChecker networkChecker = source.getNetworkChecker();
+                    if (networkChecker == null) {
+                        networkChecker = NetworkChecker.ALWAYS_AVAILABLE;
+                    }
+                    if (!networkChecker.isNetworkAvailable()) {
+                        ApiLog.i(TAG, "not running request. no network");
+                        return Request.error(new NetworkUnavailableException("no network"));
+                    }
+                    return chain.proceed(p);
+                }
+            };
+        }
+    }
 }

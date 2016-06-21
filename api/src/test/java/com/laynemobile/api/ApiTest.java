@@ -26,8 +26,8 @@
 //import java.util.concurrent.Callable;
 //import java.util.concurrent.TimeUnit;
 //
-//import api.internal.ApiLog;
-//import api.internal.subscribers.LatchSubscriber;
+//import com.laynemobile.api.internal.ApiLog;
+//import com.laynemobile.api.internal.subscribers.LatchSubscriber;
 //import rx.Observable;
 //import rx.Subscription;
 //

@@ -17,10 +17,11 @@
 package com.laynemobile.api.sources.modules;
 
 import com.laynemobile.api.Params;
-import com.laynemobile.api.sources.SourceHandler;
 import com.laynemobile.api.Source;
 import com.laynemobile.api.annotations.SourceHandlerModule;
+import com.laynemobile.api.sources.SourceHandler;
 import com.laynemobile.api.sources.SourceHandlerBuilder;
+
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Action1;

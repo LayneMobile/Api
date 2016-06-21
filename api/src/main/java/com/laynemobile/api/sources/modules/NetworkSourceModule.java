@@ -16,16 +16,15 @@
 
 package com.laynemobile.api.sources.modules;
 
-import com.laynemobile.api.sources.SourceHandler;
-import com.laynemobile.api.types.MethodHandler;
-
-import java.lang.reflect.Method;
-
 import com.laynemobile.api.annotations.SourceHandlerModule;
 import com.laynemobile.api.sources.NetworkSource;
+import com.laynemobile.api.sources.SourceHandler;
 import com.laynemobile.api.sources.SourceHandlerBuilder;
+import com.laynemobile.api.types.MethodHandler;
 import com.laynemobile.api.types.MethodResult;
 import com.laynemobile.api.util.NetworkChecker;
+
+import java.lang.reflect.Method;
 
 @SourceHandlerModule(NetworkSource.class)
 public final class NetworkSourceModule implements SourceHandlerBuilder {

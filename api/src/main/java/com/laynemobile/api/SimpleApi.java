@@ -16,11 +16,11 @@
 
 package com.laynemobile.api;
 
-import com.laynemobile.api.params.SimpleParams;
-import com.laynemobile.api.sources.modules.PreparableSourceSimpleModule;
 import com.laynemobile.api.annotations.GenerateApiBuilder;
+import com.laynemobile.api.params.SimpleParams;
 import com.laynemobile.api.sources.modules.AggregableSourceSimpleModule;
 import com.laynemobile.api.sources.modules.NetworkSourceModule;
+import com.laynemobile.api.sources.modules.PreparableSourceSimpleModule;
 import com.laynemobile.api.sources.modules.SourceSimpleModule;
 
 @GenerateApiBuilder({

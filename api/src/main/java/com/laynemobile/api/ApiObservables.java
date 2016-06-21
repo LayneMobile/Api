@@ -16,10 +16,11 @@
 
 package com.laynemobile.api;
 
-import java.util.concurrent.Callable;
-
 import com.laynemobile.api.util.Result;
 import com.laynemobile.api.util.ResultCallable;
+
+import java.util.concurrent.Callable;
+
 import rx.Observable;
 import rx.Subscriber;
 import rx.functions.Func0;

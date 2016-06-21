@@ -16,13 +16,12 @@
 
 package com.laynemobile.api.internal.request;
 
+import com.laynemobile.api.Aggregable;
 import com.laynemobile.api.Params;
 import com.laynemobile.api.sources.AggregableSource;
 
 import java.util.HashMap;
 import java.util.Map;
-
-import com.laynemobile.api.Aggregable;
 
 import rx.Observable;
 import rx.functions.Action1;

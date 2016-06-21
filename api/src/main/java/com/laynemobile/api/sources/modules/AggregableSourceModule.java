@@ -16,17 +16,17 @@
 
 package com.laynemobile.api.sources.modules;
 
+import com.laynemobile.api.Aggregable;
 import com.laynemobile.api.Params;
+import com.laynemobile.api.annotations.SourceHandlerModule;
 import com.laynemobile.api.sources.AggregableSource;
 import com.laynemobile.api.sources.SourceHandler;
+import com.laynemobile.api.sources.SourceHandlerBuilder;
 import com.laynemobile.api.types.MethodHandler;
+import com.laynemobile.api.types.MethodResult;
 
 import java.lang.reflect.Method;
 
-import com.laynemobile.api.Aggregable;
-import com.laynemobile.api.annotations.SourceHandlerModule;
-import com.laynemobile.api.sources.SourceHandlerBuilder;
-import com.laynemobile.api.types.MethodResult;
 import rx.functions.Func1;
 
 @SourceHandlerModule(AggregableSource.class)
