@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-apply from: "${rootDir}/gradle/java-library.gradle"
+package com.laynemobile.api.exceptions;
 
-dependencies {
-    compile project(':api-annotations')
-    compile project(':api-core')
-    compile "io.reactivex:rxjava:${appRxJavaVersion}"
+import java.io.IOException;
 
-    provided project(':api-compiler')
-    provided "com.laynemobile.sourcerer:extensions-processor:${appSourcererVersion}"
-    provided "org.immutables:value:${appImmutablesVersion}"
+/** Marker class for Stash specific exceptions */
+public class ApiException extends IOException {
+    public ApiException() {}
+
+    public ApiException(String detailMessage) {
+        super(detailMessage);
+    }
+
+    public ApiException(String detailMessage, Throwable throwable) {
+        super(detailMessage, throwable);
+    }
+
+    public ApiException(Throwable throwable) {
+        super(throwable);
+    }
 }

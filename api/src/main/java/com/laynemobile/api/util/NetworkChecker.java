@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-apply from: "${rootDir}/gradle/java-library.gradle"
+package com.laynemobile.api.util;
 
-dependencies {
-    compile project(':api-annotations')
-    compile project(':api-core')
-    compile "io.reactivex:rxjava:${appRxJavaVersion}"
+public interface NetworkChecker {
+    NetworkChecker ALWAYS_AVAILABLE = new NetworkChecker() {
+        @Override public boolean isNetworkAvailable() {
+            return true;
+        }
+    };
 
-    provided project(':api-compiler')
-    provided "com.laynemobile.sourcerer:extensions-processor:${appSourcererVersion}"
-    provided "org.immutables:value:${appImmutablesVersion}"
+    boolean isNetworkAvailable();
 }

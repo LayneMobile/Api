@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-apply from: "${rootDir}/gradle/java-library.gradle"
+package com.laynemobile.api.annotations;
 
-dependencies {
-    compile project(':api-annotations')
-    compile project(':api-core')
-    compile "io.reactivex:rxjava:${appRxJavaVersion}"
+import com.laynemobile.api.Source;
 
-    provided project(':api-compiler')
-    provided "com.laynemobile.sourcerer:extensions-processor:${appSourcererVersion}"
-    provided "org.immutables:value:${appImmutablesVersion}"
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+@Documented
+@Retention(RetentionPolicy.CLASS)
+@Target({ElementType.TYPE})
+public @interface SourceHandlerModule {
+    Class<? extends Source> value();
+
+    boolean simple() default true;
 }

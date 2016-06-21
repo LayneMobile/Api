@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-apply from: "${rootDir}/gradle/java-library.gradle"
+package com.laynemobile.api.params;
 
-dependencies {
-    compile project(':api-annotations')
-    compile project(':api-core')
-    compile "io.reactivex:rxjava:${appRxJavaVersion}"
+import com.laynemobile.api.Params;
 
-    provided project(':api-compiler')
-    provided "com.laynemobile.sourcerer:extensions-processor:${appSourcererVersion}"
-    provided "org.immutables:value:${appImmutablesVersion}"
+public final class SimpleParams implements Params {
+    public static final SimpleParams INSTANCE = new SimpleParams();
+
+    private SimpleParams() {}
 }

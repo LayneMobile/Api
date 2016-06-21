@@ -35,10 +35,19 @@ buildscript {
 
 apply plugin: "com.laynemobile.gradle.parent-plugin"
 
-allprojects {
+subprojects {
     repositories {
         jcenter()
         maven { url 'https://oss.jfrog.org/oss-snapshot-local' }
     }
-}
 
+    configurations {
+        testCompile
+    }
+
+    dependencies {
+        // testing
+        testCompile "junit:junit:${appJunitVersion}"
+        testCompile "org.mockito:mockito-core:${appMockitoVersion}"
+    }
+}

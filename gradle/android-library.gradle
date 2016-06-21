@@ -52,11 +52,11 @@ apply from: "${rootDir}/gradle/android-artifacts.gradle"
 apply from: "${rootDir}/gradle/install.gradle"
 
 dependencies {
-    compile project(':stash-annotations')
+    compile project(':api-annotations')
     apt "com.laynemobile.sourcerer:extensions-processor:${appSourcererVersion}"
     // TODO: hack because if not already built, doesn't work
-    provided project(':stash-compiler')
-    apt project(':stash-compiler')
+    provided project(':api-compiler')
+    apt project(':api-compiler')
     // Immutables
     apt "org.immutables:value:${appImmutablesVersion}"
     provided "org.immutables:value:${appImmutablesVersion}:annotations"

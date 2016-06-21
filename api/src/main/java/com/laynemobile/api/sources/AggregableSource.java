@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-apply from: "${rootDir}/gradle/java-library.gradle"
+package com.laynemobile.api.sources;
 
-dependencies {
-    compile project(':api-annotations')
-    compile project(':api-core')
-    compile "io.reactivex:rxjava:${appRxJavaVersion}"
+import com.laynemobile.api.Aggregable;
+import com.laynemobile.api.Params;
+import com.laynemobile.api.Source;
 
-    provided project(':api-compiler')
-    provided "com.laynemobile.sourcerer:extensions-processor:${appSourcererVersion}"
-    provided "org.immutables:value:${appImmutablesVersion}"
+public interface AggregableSource<T, P extends Params> extends Source<T, P> {
+    Aggregable getAggregable(P p);
 }

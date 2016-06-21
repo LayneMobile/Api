@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-apply from: "${rootDir}/gradle/java-library.gradle"
+package com.laynemobile.api.types;
 
-dependencies {
-    compile project(':api-annotations')
-    compile project(':api-core')
-    compile "io.reactivex:rxjava:${appRxJavaVersion}"
+public abstract class MultiTypeHandlerBuilder<T extends TypeHandler<?>> implements TypeHandlerBuilder<T> {
+    public abstract T[] buildModules();
 
-    provided project(':api-compiler')
-    provided "com.laynemobile.sourcerer:extensions-processor:${appSourcererVersion}"
-    provided "org.immutables:value:${appImmutablesVersion}"
+    @Override public final T build() {
+        T[] modules = buildModules();
+        if (modules.length == 1) {
+            return modules[0];
+        }
+        throw new UnsupportedOperationException("this class builds more than one module");
+    }
 }
