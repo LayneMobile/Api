@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api.experimental;
-
-import com.laynemobile.api.Params;
-import com.laynemobile.api.Source;
+package com.laynemobile.api;
 
 import org.immutables.value.Value;
 
@@ -25,11 +22,18 @@ import rx.Observable;
 import rx.Subscriber;
 
 @Value.Immutable
-abstract class AbstractSourceProcessor<T, P extends Params> implements RequestProcessor<T, P> {
+abstract class AbstractSourceProcessor<T, P extends Params> extends InterceptProcessor<T, P> {
     abstract Source<T, P> source();
 
-    @Override public final Observable<T> call(P p) {
-        return Observable.create(new OnSubscribeImpl(p));
+    @Value.Derived
+    @Override public Processor<T, P> processor() {
+        return new ProcessorImpl();
+    }
+
+    private final class ProcessorImpl implements Processor<T, P> {
+        @Override public Observable<T> call(P p) {
+            return Observable.create(new OnSubscribeImpl(p));
+        }
     }
 
     private final class OnSubscribeImpl implements Observable.OnSubscribe<T> {

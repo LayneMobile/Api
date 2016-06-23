@@ -14,25 +14,6 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api.experimental;
+@com.laynemobile.api.experimental.Style
+package com.laynemobile.api;
 
-import rx.functions.Func1;
-
-public interface Processor<T, R> extends Func1<T, R> {
-
-    interface Transformer<T, P extends Processor<?, ?>>
-            extends Func1<T, P> {}
-
-    interface Interceptor<T, R> {
-        R intercept(Chain<T, R> chain);
-
-        interface Chain<T, R> {
-            T value();
-
-            R proceed(T t);
-        }
-
-        interface Transformer<T, I extends Interceptor<?, ?>>
-                extends Func1<T, I> {}
-    }
-}

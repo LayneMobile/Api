@@ -14,18 +14,16 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api.experimental;
+package com.laynemobile.api.internal.request;
 
 import com.laynemobile.api.Params;
+import com.laynemobile.api.Processor.Interceptor;
+import com.laynemobile.api.sources.AggregableSource;
 
-import java.util.List;
+public final class Interceptors {
+    private Interceptors() { throw new AssertionError("no instances"); }
 
-import rx.Observable;
-
-public abstract class RequestInterceptProcessor<T, P extends Params>
-        extends InterceptProcessor<P, Observable<T>>
-        implements RequestProcessor<T, P> {
-    protected abstract RequestProcessor<T, P> processor();
-
-    protected abstract List<RequestProcessor.Interceptor<T, P>> interceptors();
+    public static <T, P extends Params> Interceptor<T, P> aggregate(AggregableSource<T, P> source) {
+        return AggregableProcessor.create(source);
+    }
 }

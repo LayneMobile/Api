@@ -16,25 +16,28 @@
 
 package com.laynemobile.api;
 
-import com.laynemobile.api.internal.request.SourceProcessorBuilder;
-
 import rx.Observable;
+import rx.functions.Func1;
+import rx.functions.Func2;
 
-public interface SourceProcessor<T, P extends Params> {
-    Observable<T> getSourceRequest(P p);
+public interface Processor<T, P> extends Func1<P, Observable<T>> {
 
-    Observable<T> peekSourceRequest(P p);
+    interface Interceptor<T, P> {
+        Observable<T> intercept(Chain<T, P> chain);
 
-    final class Builder<T, P extends Params> implements com.laynemobile.api.Builder<SourceProcessor<T, P>> {
-        private final SourceProcessorBuilder<T, P> builder = new SourceProcessorBuilder<T, P>();
+        interface Chain<T, P> {
+            P params();
 
-        public Builder<T, P> setSource(Source<T, P> source) {
-            builder.setSource(source);
-            return this;
+            Observable<T> proceed(P p);
         }
 
-        @Override public SourceProcessor<T, P> build() {
-            return builder.build();
-        }
+        interface Transformer<T, I extends Interceptor<?, ?>>
+                extends Func1<T, I> {}
     }
+
+    interface Checker<P> {
+        void check(P p) throws Exception;
+    }
+
+    interface Modifier<T, P> extends Func2<P, Observable<T>, Observable<T>> {}
 }

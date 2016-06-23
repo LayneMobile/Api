@@ -18,6 +18,7 @@ package com.laynemobile.api.internal.request;
 
 import com.laynemobile.api.Aggregable;
 import com.laynemobile.api.Params;
+import com.laynemobile.api.Processor;
 import com.laynemobile.api.sources.AggregableSource;
 
 import java.util.HashMap;
@@ -26,13 +27,12 @@ import java.util.Map;
 import rx.Observable;
 import rx.functions.Action1;
 
-class AggregableProcessor<T, P extends Params> extends DefaultRequestProcessor<T, P> {
+class AggregableProcessor<T, P extends Params> implements Processor.Interceptor<T, P> {
     private final Map<Object, Aggregate<T>> aggregates = new HashMap<>(4);
     private final OnAggregateComplete onAggregateComplete = new OnAggregateComplete();
     private final AggregableSource<T, P> source;
 
-    AggregableProcessor(AggregableSource<T, P> source) {
-        super(source);
+    private AggregableProcessor(AggregableSource<T, P> source) {
         this.source = source;
     }
 
@@ -40,11 +40,12 @@ class AggregableProcessor<T, P extends Params> extends DefaultRequestProcessor<T
         return new AggregableProcessor<>(source);
     }
 
-    @Override public Observable<T> getRequestObservable(P p) {
+    @Override public Observable<T> intercept(Chain<T, P> chain) {
+        final P p = chain.params();
         final Object aggregateKey;
         final Aggregable aggregable = source.getAggregable(p);
         if (aggregable == null || (aggregateKey = aggregable.key()) == null) {
-            return super.getRequestObservable(p);
+            return chain.proceed(p);
         }
 
         Aggregate<T> aggregate;
@@ -52,7 +53,7 @@ class AggregableProcessor<T, P extends Params> extends DefaultRequestProcessor<T
             aggregate = aggregates.get(aggregateKey);
         }
         if (aggregate == null || aggregate.isCompleted()) {
-            Observable<T> request = super.getRequestObservable(p);
+            Observable<T> request = chain.proceed(p);
             synchronized (aggregates) {
                 aggregate = aggregates.get(aggregateKey);
                 if (aggregate == null || aggregate.isCompleted()) {

@@ -18,37 +18,16 @@ package com.laynemobile.api.sources;
 
 import com.laynemobile.api.Aggregable;
 import com.laynemobile.api.Params;
+import com.laynemobile.api.Processor.Interceptor;
 import com.laynemobile.api.Source;
-import com.laynemobile.api.experimental.Processor;
-import com.laynemobile.api.experimental.RequestProcessor;
-
-import rx.Observable;
+import com.laynemobile.api.internal.request.Interceptors;
 
 public interface AggregableSource<T, P extends Params> extends Source<T, P> {
     Aggregable getAggregable(P p);
 
-    class Transformer<T, P extends Params> implements Processor.Interceptor.Transformer<AggregableSource<T, P>, RequestProcessor.Interceptor<T, P>> {
-        @Override public RequestProcessor.Interceptor<T, P> call(final AggregableSource<T, P> source) {
-            return new RequestProcessor.Interceptor<T, P>() {
-                @Override public Observable<T> intercept(Processor.Interceptor.Chain<P, Observable<T>> chain) {
-                    P p = chain.value();
-                    Aggregable aggregable = source.getAggregable(p);
-                    if (aggregable != null) {
-                        Object key = aggregable.key();
-                        // TODO: look for existing
-                        /*
-                            Aggregate aggregate = find(key);
-                            if (aggregate == null) {
-                                Request<T> source = chain.proceed(p);
-                                aggregate = new Aggregate(source);
-                                put(key, aggregate);
-                            }
-                            return aggregate.request;
-                         */
-                    }
-                    return chain.proceed(p);
-                }
-            };
+    class Transformer<T, P extends Params> implements Interceptor.Transformer<AggregableSource<T, P>, Interceptor<T, P>> {
+        @Override public Interceptor<T, P> call(final AggregableSource<T, P> source) {
+            return Interceptors.aggregate(source);
         }
     }
 }

@@ -128,7 +128,7 @@ public interface Source<T, P extends Params> {
         Action2<P, Subscriber<? super T>> source;
 
         @ProxyMethod("get")
-        Func0<T> value;
+        Func0<T> params;
 
         @ProxyTransform("call")
         Action2<P, Subscriber<? super T>> source(final Action1<Subscriber<? super T>> source) {
@@ -159,7 +159,7 @@ public interface Source<T, P extends Params> {
         }
 
         @ProxyTransform("get")
-        Func0<T> value(final T t) {
+        Func0<T> params(final T t) {
             return new Func0<T>() {
                 @Override public T call() {
                     return t;
@@ -216,13 +216,13 @@ public interface Source<T, P extends Params> {
             return this;
         }
 
-        Builder<T, P> value(Func0<T> value) {
-            proxy.value = value;
+        Builder<T, P> params(Func0<T> params) {
+            proxy.params = params;
             return this;
         }
 
-        Builder<T, P> value(T t) {
-            proxy.value = proxy.value(t);
+        Builder<T, P> params(T t) {
+            proxy.params = proxy.params(t);
             return this;
         }
 

@@ -14,21 +14,10 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api.experimental;
+package com.laynemobile.api;
 
-import com.laynemobile.api.Params;
+import org.immutables.value.Value;
 
-import rx.Observable;
-
-public interface RequestProcessor<T, P extends Params> extends Processor<P, Observable<T>> {
-
-    interface Transformer<T, P extends RequestProcessor<?, ?>>
-            extends Processor.Transformer<T, P> {}
-
-    interface Interceptor<T, P extends Params>
-            extends Processor.Interceptor<P, Observable<T>> {
-
-        interface Transformer<T, I extends Interceptor<?, ?>>
-                extends Processor.Interceptor.Transformer<T, I> {}
-    }
-}
+@Value.Immutable
+@Style
+abstract class AbstractInterceptProcessor<T, P> extends InterceptProcessor<T, P> {}

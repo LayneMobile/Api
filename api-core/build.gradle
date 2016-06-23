@@ -17,5 +17,7 @@
 apply from: "${rootDir}/gradle/java-library.gradle"
 
 dependencies {
+    compile "com.google.guava:guava:${appGuavaVersion}"
     provided "io.reactivex:rxjava:${appRxJavaVersion}"
+    provided "org.immutables:value:${appImmutablesVersion}"
 }
