@@ -17,6 +17,8 @@
 package com.laynemobile.api.experimental;
 
 import com.laynemobile.api.Params;
+import com.laynemobile.api.Source;
+import com.laynemobile.api.sources.NetworkSource;
 import com.laynemobile.api.sources.SourceBuilder;
 import com.laynemobile.api.sources.modules.SourceModule;
 
@@ -66,5 +68,19 @@ public class Source2Builder<T, P extends Params> {
 
     public class Step2 {
 
+        Source<T, P> build() {
+            return builder.build();
+        }
+
+        RequestProcessor<T, P> requestProcessor() {
+            Source<T, P> source = build();
+            SourceRequestProcessor.Builder<T, P> b = SourceRequestProcessor.<T, P>builder()
+                    .setSource(source);
+            if (source instanceof NetworkSource) {
+                b.addInterceptors(new NetworkSource.Transformer<T, P>()
+                        .call((NetworkSource<T, P>) source));
+            }
+            return b.build();
+        }
     }
 }
