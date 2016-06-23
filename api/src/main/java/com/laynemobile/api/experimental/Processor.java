@@ -20,14 +20,14 @@ import rx.functions.Func1;
 
 public interface Processor<T, R> extends Func1<T, R> {
 
-    interface Transformer<T1, T2, P extends Processor<T1, ?>>
-            extends Func1<T2, P> {}
+    interface Transformer<T, P extends Processor<?, ?>>
+            extends Func1<T, P> {}
 
     interface Interceptor<T, R> {
         R intercept(Chain<T, R> chain);
 
         interface Chain<T, R> {
-            T params();
+            T value();
 
             R proceed(T t);
         }

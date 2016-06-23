@@ -36,6 +36,6 @@ public class SimpleApi<T> extends BaseApi<T, SimpleParams> {
 
     public final Request<T> getRequest() {
         return requestProcessor()
-                .getRequest(SimpleParams.INSTANCE);
+                .request(SimpleParams.INSTANCE);
     }
 }

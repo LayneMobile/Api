@@ -19,22 +19,22 @@ package com.laynemobile.api.sources.modules;
 import com.laynemobile.api.Params;
 import com.laynemobile.api.annotations.SourceHandlerModule;
 import com.laynemobile.api.sources.PreparableSource;
-import com.laynemobile.api.sources.SourceHandler;
 import com.laynemobile.api.sources.SourceHandlerBuilder;
+import com.laynemobile.api.types.TypeHandler;
 
 import rx.Observable;
 import rx.functions.Func1;
 import rx.functions.Func2;
 
 @SourceHandlerModule(PreparableSource.class)
-public final class PreparableSourceSimpleModule<T, P extends Params> implements SourceHandlerBuilder {
+public final class PreparableSourceSimpleModule<T, P extends Params> implements SourceHandlerBuilder<PreparableSource> {
     private final PreparableSourceModule<T, P> module = new PreparableSourceModule<T, P>();
 
     public PreparableSourceSimpleModule<T, P> prepareSource(Func1<Observable<T>, Observable<T>> func) {
         return prepareSourceInternal(this, func);
     }
 
-    @Override public SourceHandler build() {
+    @Override public TypeHandler<PreparableSource> build() {
         return module.build();
     }
 

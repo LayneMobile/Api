@@ -19,10 +19,10 @@ package com.laynemobile.api.sources.modules;
 import com.laynemobile.api.Params;
 import com.laynemobile.api.annotations.SourceHandlerModule;
 import com.laynemobile.api.sources.PreparableSource;
-import com.laynemobile.api.sources.SourceHandler;
 import com.laynemobile.api.sources.SourceHandlerBuilder;
 import com.laynemobile.api.types.MethodHandler;
 import com.laynemobile.api.types.MethodResult;
+import com.laynemobile.api.types.TypeHandler;
 
 import java.lang.reflect.Method;
 
@@ -30,7 +30,7 @@ import rx.Observable;
 import rx.functions.Func2;
 
 @SourceHandlerModule(PreparableSource.class)
-public final class PreparableSourceModule<T, P extends Params> implements SourceHandlerBuilder {
+public final class PreparableSourceModule<T, P extends Params> implements SourceHandlerBuilder<PreparableSource> {
     private Func2<Observable<T>, P, Observable<T>> func;
 
     public PreparableSourceModule<T, P> prepareSource(Func2<Observable<T>, P, Observable<T>> func) {
@@ -38,8 +38,8 @@ public final class PreparableSourceModule<T, P extends Params> implements Source
         return this;
     }
 
-    @Override public SourceHandler build() {
-        return new SourceHandler.Builder(PreparableSource.class)
+    @Override public TypeHandler<PreparableSource> build() {
+        return TypeHandler.<PreparableSource>builder()
                 .handle("prepareSourceRequest", new Handler<T, P>(func))
                 .build();
     }

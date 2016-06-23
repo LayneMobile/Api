@@ -56,9 +56,9 @@
 //        when(callable.call()).thenReturn(value);
 //        final AggregableApi<String> api = AggregableApi.create(callable, 10);
 //        final AggregableApi.Params params = new AggregableApi.Params("key");
-//        Observable<String> request = api.getRequest(params).asAsyncObservable();
-//        Observable<String> request2 = api.getRequest(params).asAsyncObservable();
-//        Observable<String> request3 = api.getRequest(params).asAsyncObservable();
+//        Observable<String> request = api.request(params).asAsyncObservable();
+//        Observable<String> request2 = api.request(params).asAsyncObservable();
+//        Observable<String> request3 = api.request(params).asAsyncObservable();
 //
 //        LatchSubscriber<String> subscriber = new LatchSubscriber<String>();
 //        Observable.merge(request, request2, request3)
@@ -75,9 +75,9 @@
 //        // Now make call again
 //        Thread.sleep(TimeUnit.SECONDS.toMillis(2));
 //        subscriber = new LatchSubscriber<String>();
-//        request = api.getRequest(params).asAsyncObservable();
-//        request2 = api.getRequest(params).asAsyncObservable();
-//        request3 = api.getRequest(params).asAsyncObservable();
+//        request = api.request(params).asAsyncObservable();
+//        request2 = api.request(params).asAsyncObservable();
+//        request3 = api.request(params).asAsyncObservable();
 //        Observable.merge(request, request2, request3)
 //                .subscribe(subscriber);
 //        subscriber.await();
@@ -106,7 +106,7 @@
 //        });
 //        final AggregableApi<String> api = AggregableApi.create(callable, 10);
 //        final AggregableApi.Params params = new AggregableApi.Params("key");
-//        Observable<String> request = api.getRequest(params).asAsyncObservable();
+//        Observable<String> request = api.request(params).asAsyncObservable();
 //
 //        LatchSubscriber<String> subscriber = new LatchSubscriber<String>();
 //        Subscription sub = request.subscribe(subscriber);
@@ -121,9 +121,9 @@
 //
 //        // Now make call again
 //        subscriber = new LatchSubscriber<String>();
-//        request = api.getRequest(params).asAsyncObservable();
-//        Observable<String> request2 = api.getRequest(params).asAsyncObservable();
-//        Observable<String> request3 = api.getRequest(params).asAsyncObservable();
+//        request = api.request(params).asAsyncObservable();
+//        Observable<String> request2 = api.request(params).asAsyncObservable();
+//        Observable<String> request3 = api.request(params).asAsyncObservable();
 //        Observable.merge(request, request2, request3)
 //                .subscribe(subscriber);
 //        subscriber.await();

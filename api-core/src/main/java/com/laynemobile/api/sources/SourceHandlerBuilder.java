@@ -16,6 +16,7 @@
 
 package com.laynemobile.api.sources;
 
+import com.laynemobile.api.Source;
 import com.laynemobile.api.types.TypeHandlerBuilder;
 
-public interface SourceHandlerBuilder extends TypeHandlerBuilder<SourceHandler> {}
+public interface SourceHandlerBuilder<S extends Source> extends TypeHandlerBuilder<S> {}

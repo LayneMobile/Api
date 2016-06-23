@@ -16,45 +16,47 @@
 
 package com.laynemobile.api.sources;
 
-import com.laynemobile.api.Params;
-
-import java.util.Collection;
-import java.util.List;
-
 import com.laynemobile.api.Builder;
+import com.laynemobile.api.Params;
 import com.laynemobile.api.Source;
 import com.laynemobile.api.types.TypeBuilder;
 import com.laynemobile.api.types.TypeHandler;
+
+import java.util.Collection;
+import java.util.List;
 
 public final class SourceBuilder<T, P extends Params> implements Builder<Source<T, P>> {
     private final TypeBuilder<Source> source;
 
     public SourceBuilder() {
-        this.source = new TypeBuilder<>(Source.class);
+        this.source = new TypeBuilder<>();
     }
 
     public boolean contains(Class<? extends Source> type) {
         return source.contains(type);
     }
 
-    public TypeBuilder<Source> module(SourceHandler module) {
-        return source.module(module);
+    public SourceBuilder<T, P> module(TypeHandler<? extends Source> module) {
+        source.module(module);
+        return this;
     }
 
     public void verifyContains(Class<? extends Source> type) {
         source.verifyContains(type);
     }
 
-    public TypeBuilder<Source> modules(List<SourceHandler> modules) {
-        return source.modules(modules);
+    public SourceBuilder<T, P> modules(List<TypeHandler<? extends Source>> modules) {
+        source.modules(modules);
+        return this;
     }
 
     public void verifyContains(Collection<Class<? extends Source>> types) {
         source.verifyContains(types);
     }
 
-    @SafeVarargs public final TypeBuilder<Source> modules(TypeHandler<? extends Source>... modules) {
-        return source.modules(modules);
+    @SafeVarargs public final SourceBuilder<T, P> modules(TypeHandler<? extends Source>... modules) {
+        source.modules(modules);
+        return this;
     }
 
     @SuppressWarnings("unchecked")

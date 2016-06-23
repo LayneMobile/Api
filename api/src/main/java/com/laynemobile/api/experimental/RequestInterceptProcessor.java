@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api;
+package com.laynemobile.api.experimental;
 
-import rx.Subscriber;
+import com.laynemobile.api.Params;
 
-public interface RequestApi2<T, P extends Params> extends Api2 {
+import java.util.List;
 
-    interface Source<T, P extends Params> extends Api2.Source {
-        void call(P p, Subscriber<? super T> subscriber);
-    }
+import rx.Observable;
 
-    interface Handler<S extends Source, P extends Processor> {
-        P processor(S s);
-    }
+public abstract class RequestInterceptProcessor<T, P extends Params>
+        extends InterceptProcessor<P, Observable<T>>
+        implements RequestProcessor<T, P> {
+    protected abstract RequestProcessor<T, P> processor();
+
+    protected abstract List<RequestProcessor.Interceptor<T, P>> interceptors();
 }

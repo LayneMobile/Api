@@ -16,8 +16,12 @@
 
 package com.laynemobile.api;
 
-import com.laynemobile.api.sources.SourceHandler;
+import com.laynemobile.api.sources.SourceBuilder;
+import com.laynemobile.api.types.TypeHandler;
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.WildcardTypeName;
 
 import java.util.List;
 
@@ -25,10 +29,12 @@ final class Constants {
     static final String PACKAGE = "com.laynemobile.api";
     static final ClassName Override = ClassName.get(Override.class);
     static final ClassName BaseApi = ClassName.get(PACKAGE, "BaseApi");
-    static final ClassName SourceModule = ClassName.get(SourceHandler.class);
-    static final ClassName Builder = ClassName.get(Builder.class);
-    static final ClassName SourceBuilder = ClassName.get(com.laynemobile.api.sources.SourceBuilder.class);
     static final ClassName Source = ClassName.get(Source.class);
+    static final ClassName TypeHandler = ClassName.get(TypeHandler.class);
+    static final TypeName SourceModule
+            = ParameterizedTypeName.get(TypeHandler, WildcardTypeName.subtypeOf(Source));
+    static final ClassName Builder = ClassName.get(Builder.class);
+    static final ClassName SourceBuilder = ClassName.get(SourceBuilder.class);
     static final ClassName RequestProcessor = ClassName.get(PACKAGE, "RequestProcessor");
     static final ClassName RequestProcessorBuilder = ClassName.get(RequestProcessor.packageName(),
             RequestProcessor.simpleName(), "Builder");

@@ -21,13 +21,13 @@ import com.laynemobile.api.aggregables.SimpleAggregable;
 import com.laynemobile.api.annotations.SourceHandlerModule;
 import com.laynemobile.api.params.SimpleParams;
 import com.laynemobile.api.sources.AggregableSource;
-import com.laynemobile.api.sources.SourceHandler;
 import com.laynemobile.api.sources.SourceHandlerBuilder;
+import com.laynemobile.api.types.TypeHandler;
 
 import rx.functions.Func1;
 
 @SourceHandlerModule(AggregableSource.class)
-public final class AggregableSourceSimpleModule implements SourceHandlerBuilder {
+public final class AggregableSourceSimpleModule implements SourceHandlerBuilder<AggregableSource> {
     private final AggregableSourceModule<SimpleParams> module = new AggregableSourceModule<SimpleParams>();
 
     public AggregableSourceSimpleModule aggregate() {
@@ -42,7 +42,7 @@ public final class AggregableSourceSimpleModule implements SourceHandlerBuilder 
         return aggregateInternal(this, keepAliveSeconds, keepAliveOnError);
     }
 
-    @Override public SourceHandler build() {
+    @Override public TypeHandler<AggregableSource> build() {
         return module.build();
     }
 

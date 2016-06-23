@@ -17,7 +17,6 @@
 package com.laynemobile.api.experimental;
 
 import com.laynemobile.api.Params;
-import com.laynemobile.api.Request;
 import com.laynemobile.api.Source;
 
 import org.immutables.value.Value;
@@ -29,8 +28,8 @@ import rx.Subscriber;
 abstract class AbstractSourceProcessor<T, P extends Params> implements RequestProcessor<T, P> {
     abstract Source<T, P> source();
 
-    @Override public final Request<T> call(P p) {
-        return Request.create(new OnSubscribeImpl(p));
+    @Override public final Observable<T> call(P p) {
+        return Observable.create(new OnSubscribeImpl(p));
     }
 
     private final class OnSubscribeImpl implements Observable.OnSubscribe<T> {

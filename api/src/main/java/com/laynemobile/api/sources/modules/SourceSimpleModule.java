@@ -19,8 +19,8 @@ package com.laynemobile.api.sources.modules;
 import com.laynemobile.api.Params;
 import com.laynemobile.api.Source;
 import com.laynemobile.api.annotations.SourceHandlerModule;
-import com.laynemobile.api.sources.SourceHandler;
 import com.laynemobile.api.sources.SourceHandlerBuilder;
+import com.laynemobile.api.types.TypeHandler;
 
 import rx.Observable;
 import rx.Subscriber;
@@ -30,7 +30,7 @@ import rx.functions.Func0;
 import rx.functions.Func1;
 
 @SourceHandlerModule(Source.class)
-public final class SourceSimpleModule<T, P extends Params> implements SourceHandlerBuilder {
+public final class SourceSimpleModule<T, P extends Params> implements SourceHandlerBuilder<Source> {
     private final SourceModule<T, P> module = new SourceModule<T, P>();
 
     public SourceSimpleModule<T, P> source(Action1<Subscriber<? super T>> source) {
@@ -45,7 +45,7 @@ public final class SourceSimpleModule<T, P extends Params> implements SourceHand
         return sourceInternal(this, source);
     }
 
-    @Override public SourceHandler build() {
+    @Override public TypeHandler<Source> build() {
         return module.build();
     }
 

@@ -19,10 +19,10 @@ package com.laynemobile.api.sources.modules;
 import com.laynemobile.api.Params;
 import com.laynemobile.api.Source;
 import com.laynemobile.api.annotations.SourceHandlerModule;
-import com.laynemobile.api.sources.SourceHandler;
 import com.laynemobile.api.sources.SourceHandlerBuilder;
 import com.laynemobile.api.types.MethodHandler;
 import com.laynemobile.api.types.MethodResult;
+import com.laynemobile.api.types.TypeHandler;
 
 import java.lang.reflect.Method;
 
@@ -31,7 +31,7 @@ import rx.functions.Action2;
 import rx.functions.Func1;
 
 @SourceHandlerModule(Source.class)
-public final class SourceModule<T, P extends Params> implements SourceHandlerBuilder {
+public final class SourceModule<T, P extends Params> implements SourceHandlerBuilder<Source> {
     private Action2<P, Subscriber<? super T>> source;
 
     public SourceModule<T, P> source(Action2<P, Subscriber<? super T>> source) {
@@ -43,11 +43,11 @@ public final class SourceModule<T, P extends Params> implements SourceHandlerBui
         return sourceInternal(this, source);
     }
 
-    @Override public SourceHandler build() {
+    @Override public TypeHandler<Source> build() {
         if (source == null) {
             throw new IllegalStateException("source must be set");
         }
-        return new SourceHandler.Builder(Source.class)
+        return TypeHandler.<Source>builder()
                 .handle("call", new Handler<T, P>(source))
                 .build();
     }

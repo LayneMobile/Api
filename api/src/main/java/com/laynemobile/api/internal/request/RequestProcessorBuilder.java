@@ -50,7 +50,7 @@ public final class RequestProcessorBuilder<T, P extends Params> {
             this.impl = impl;
         }
 
-        @Override public Request<T> getRequest(P p) {
+        @Override public Request<T> request(P p) {
             return impl.getRequest(p);
         }
     }

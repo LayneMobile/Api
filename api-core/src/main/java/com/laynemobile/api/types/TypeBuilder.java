@@ -38,12 +38,8 @@ public final class TypeBuilder<T> implements Builder<T> {
     private final TypeToken<T> baseType;
     private final Set<TypeHandler<? extends T>> modules = new HashSet<>();
 
-    public TypeBuilder(Class<T> baseType) {
-        this(TypeToken.get(baseType));
-    }
-
-    public TypeBuilder(TypeToken<T> baseType) {
-        this.baseType = baseType;
+    public TypeBuilder() {
+        this.baseType = new TypeToken<T>() {};
     }
 
     public final TypeBuilder<T> module(TypeHandler<? extends T> module) {
@@ -66,11 +62,7 @@ public final class TypeBuilder<T> implements Builder<T> {
         return this;
     }
 
-    public final boolean contains(Class<? extends T> type) {
-        return contains(type, modules);
-    }
-
-    private static final boolean contains(Class<?> type, Collection<? extends TypeHandler<?>> modules) {
+    public final boolean contains(Class<?> type) {
         for (TypeHandler<?> module : modules) {
             if (module.type.equals(type)) {
                 return true;
@@ -79,15 +71,15 @@ public final class TypeBuilder<T> implements Builder<T> {
         return false;
     }
 
-    public final void verifyContains(Class<? extends T> type) {
+    public final void verifyContains(Class<?> type) {
         if (!contains(type)) {
             String msg = String.format("builder must have type '%s'. You might have forgot a module", type);
             throw new IllegalStateException(msg);
         }
     }
 
-    public final void verifyContains(Collection<Class<? extends T>> types) {
-        for (Class<? extends T> type : types) {
+    public final void verifyContains(Collection<? extends Class<?>> types) {
+        for (Class<?> type : types) {
             verifyContains(type);
         }
     }
@@ -95,7 +87,7 @@ public final class TypeBuilder<T> implements Builder<T> {
     @Override public final T build() {
         if (modules.isEmpty()) {
             throw new IllegalStateException("no modules");
-        } else if (!contains(baseType.getRawType(), modules)) {
+        } else if (!contains(baseType.getRawType())) {
             String msg = String.format(Locale.US, "must contain '%s' module", baseType);
             throw new IllegalStateException(msg);
         }
@@ -104,10 +96,10 @@ public final class TypeBuilder<T> implements Builder<T> {
 
     @SuppressWarnings("unchecked")
     private static <T> T create(TypeToken<T> baseType, Collection<TypeHandler<? extends T>> extensions) {
-        Set<Class<? extends T>> classes = new HashSet<>();
+        Set<Class<?>> classes = new HashSet<>();
         Map<String, List<MethodHandler>> handlers = new HashMap<>();
         for (TypeHandler<? extends T> extension : extensions) {
-            classes.add(extension.type);
+            classes.add(extension.type.getRawType());
             for (Map.Entry<String, List<MethodHandler>> entry : extension.handlers.entrySet()) {
                 final String name = entry.getKey();
                 List<MethodHandler> current = handlers.get(name);

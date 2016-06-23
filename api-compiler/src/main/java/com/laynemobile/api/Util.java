@@ -23,6 +23,7 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeVariableName;
+import com.squareup.javapoet.WildcardTypeName;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -107,6 +108,10 @@ final class Util {
 
     static ParameterizedTypeName list(TypeName ofType) {
         return paramType(List, ofType);
+    }
+
+    static ParameterizedTypeName wildcardList(TypeName ofType) {
+        return list(WildcardTypeName.subtypeOf(ofType));
     }
 
     static ParameterizedTypeName sourceBuilder(List<? extends TypeName> paramTypes) {

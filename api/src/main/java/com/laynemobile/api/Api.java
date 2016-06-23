@@ -34,6 +34,6 @@ public class Api<T, P extends Params> extends BaseApi<T, P> {
     }
 
     public final Request<T> getRequest(P p) {
-        return requestProcessor().getRequest(p);
+        return requestProcessor().request(p);
     }
 }

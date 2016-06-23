@@ -19,7 +19,7 @@ package com.laynemobile.api;
 import com.laynemobile.api.internal.request.RequestProcessorBuilder;
 
 public interface RequestProcessor<T, P extends Params> {
-    Request<T> getRequest(P p);
+    Request<T> request(P p);
 
     final class Builder<T, P extends Params> implements com.laynemobile.api.Builder<RequestProcessor<T, P>> {
         private final RequestProcessorBuilder<T, P> impl = new RequestProcessorBuilder<T, P>();

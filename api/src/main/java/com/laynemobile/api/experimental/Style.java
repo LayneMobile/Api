@@ -36,7 +36,6 @@ import static org.immutables.value.Value.Style.ImplementationVisibility.PUBLIC;
         typeModifiable = "*Editor",
         instance = "instance",
         deepImmutablesDetection = true,
-        builder = "new", // construct builder using 'new' instead of factory method
         builderVisibility = Value.Style.BuilderVisibility.PUBLIC,
         visibility = PUBLIC) // Generated class will be the same
 public @interface Style {}

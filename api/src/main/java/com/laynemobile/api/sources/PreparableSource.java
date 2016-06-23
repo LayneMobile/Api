@@ -17,7 +17,6 @@
 package com.laynemobile.api.sources;
 
 import com.laynemobile.api.Params;
-import com.laynemobile.api.Request;
 import com.laynemobile.api.Source;
 import com.laynemobile.api.experimental.Processor;
 import com.laynemobile.api.experimental.RequestProcessor;
@@ -40,11 +39,10 @@ public interface PreparableSource<T, P extends Params> extends Source<T, P> {
     class Transformer<T, P extends Params> implements Processor.Interceptor.Transformer<PreparableSource<T, P>, RequestProcessor.Interceptor<T, P>> {
         @Override public RequestProcessor.Interceptor<T, P> call(final PreparableSource<T, P> source) {
             return new RequestProcessor.Interceptor<T, P>() {
-                @Override public Request<T> intercept(Processor.Interceptor.Chain<P, Request<T>> chain) {
-                    P p = chain.params();
-                    Request<T> request = chain.proceed(p);
-                    Observable<T> prepared = source.prepareSourceRequest(request.asObservable(), p);
-                    return Request.from(prepared);
+                @Override public Observable<T> intercept(Processor.Interceptor.Chain<P, Observable<T>> chain) {
+                    P p = chain.value();
+                    Observable<T> request = chain.proceed(p);
+                    return source.prepareSourceRequest(request, p);
                 }
             };
         }

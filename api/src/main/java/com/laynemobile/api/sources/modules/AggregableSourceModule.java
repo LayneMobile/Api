@@ -20,17 +20,17 @@ import com.laynemobile.api.Aggregable;
 import com.laynemobile.api.Params;
 import com.laynemobile.api.annotations.SourceHandlerModule;
 import com.laynemobile.api.sources.AggregableSource;
-import com.laynemobile.api.sources.SourceHandler;
 import com.laynemobile.api.sources.SourceHandlerBuilder;
 import com.laynemobile.api.types.MethodHandler;
 import com.laynemobile.api.types.MethodResult;
+import com.laynemobile.api.types.TypeHandler;
 
 import java.lang.reflect.Method;
 
 import rx.functions.Func1;
 
 @SourceHandlerModule(AggregableSource.class)
-public final class AggregableSourceModule<P extends Params> implements SourceHandlerBuilder {
+public final class AggregableSourceModule<P extends Params> implements SourceHandlerBuilder<AggregableSource> {
     private Func1<P, Aggregable> action;
 
     public AggregableSourceModule<P> aggregate(Func1<P, Aggregable> action) {
@@ -38,11 +38,11 @@ public final class AggregableSourceModule<P extends Params> implements SourceHan
         return this;
     }
 
-    @Override public SourceHandler build() {
+    @Override public TypeHandler<AggregableSource> build() {
         if (action == null) {
             throw new IllegalStateException("source must be set");
         }
-        return new SourceHandler.Builder(AggregableSource.class)
+        return TypeHandler.<AggregableSource>builder()
                 .handle("getAggregable", new Handler<P>(action))
                 .build();
     }

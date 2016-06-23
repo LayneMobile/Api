@@ -23,11 +23,11 @@ import java.util.List;
 import java.util.Map;
 
 public class TypeHandler<T> {
-    final Class<? extends T> type;
+    final TypeToken<T> type;
     final Map<String, List<MethodHandler>> handlers;
 
     protected TypeHandler(Builder<T> builder) {
-        this.type = builder.type;
+        this.type = new TypeToken<T>() {};
         this.handlers = Collections.unmodifiableMap(builder.handlers);
     }
 
@@ -42,14 +42,15 @@ public class TypeHandler<T> {
         return type.hashCode();
     }
 
+    public static <T> Builder<T> builder() {
+        return new Builder<>();
+    }
+
     public static final class Builder<T> {
-        private final Class<? extends T> type;
         private final Map<String, List<MethodHandler>> handlers
                 = new HashMap<String, List<MethodHandler>>();
 
-        public Builder(Class<? extends T> type) {
-            this.type = type;
-        }
+        private Builder() {}
 
         public MethodBuilder<T> method(String methodName) {
             return new MethodBuilder<T>(this, methodName);

@@ -18,4 +18,4 @@ package com.laynemobile.api.types;
 
 import com.laynemobile.api.Builder;
 
-public interface TypeHandlerBuilder<T extends TypeHandler<?>> extends Builder<T> {}
+public interface TypeHandlerBuilder<T> extends Builder<TypeHandler<? extends T>> {}

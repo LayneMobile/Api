@@ -16,11 +16,11 @@
 
 package com.laynemobile.api.types;
 
-public abstract class MultiTypeHandlerBuilder<T extends TypeHandler<?>> implements TypeHandlerBuilder<T> {
-    public abstract T[] buildModules();
+public abstract class MultiTypeHandlerBuilder<T> implements TypeHandlerBuilder<T> {
+    public abstract TypeHandler<T>[] buildModules();
 
-    @Override public final T build() {
-        T[] modules = buildModules();
+    @Override public final TypeHandler<T> build() {
+        TypeHandler<T>[] modules = buildModules();
         if (modules.length == 1) {
             return modules[0];
         }

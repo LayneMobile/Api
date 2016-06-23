@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api;
+package com.laynemobile.api.experimental;
 
-/** Marker Interface. */
-public interface Api2 {
-    /** Marker Interface. */
-    interface Source {}
+import com.laynemobile.api.Params;
+import com.laynemobile.api.Source;
 
-    interface Handler<S extends Source, P extends Processor> {
-        P processor(S s);
+public class Source2Transformer<T, P extends Params>
+        implements RequestProcessor.Transformer<Source<T, P>, RequestProcessor<T, P>> {
+    @Override public RequestProcessor<T, P> call(Source<T, P> source) {
+        return SourceProcessor.<T, P>builder()
+                .setSource(source)
+                .build();
     }
 }

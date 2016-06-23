@@ -16,6 +16,8 @@
 
 package com.laynemobile.api.sources;
 
+import com.laynemobile.api.Source;
 import com.laynemobile.api.types.MultiTypeHandlerBuilder;
 
-public abstract class MultiSourceHandlerBuilder extends MultiTypeHandlerBuilder<SourceHandler> {}
+public abstract class MultiSourceHandlerBuilder
+        extends MultiTypeHandlerBuilder<Source> {}

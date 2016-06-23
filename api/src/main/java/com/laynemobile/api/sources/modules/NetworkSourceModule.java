@@ -18,16 +18,16 @@ package com.laynemobile.api.sources.modules;
 
 import com.laynemobile.api.annotations.SourceHandlerModule;
 import com.laynemobile.api.sources.NetworkSource;
-import com.laynemobile.api.sources.SourceHandler;
 import com.laynemobile.api.sources.SourceHandlerBuilder;
 import com.laynemobile.api.types.MethodHandler;
 import com.laynemobile.api.types.MethodResult;
+import com.laynemobile.api.types.TypeHandler;
 import com.laynemobile.api.util.NetworkChecker;
 
 import java.lang.reflect.Method;
 
 @SourceHandlerModule(NetworkSource.class)
-public final class NetworkSourceModule implements SourceHandlerBuilder {
+public final class NetworkSourceModule implements SourceHandlerBuilder<NetworkSource> {
     private NetworkChecker networkChecker;
 
     public NetworkSourceModule requiresNetwork() {
@@ -40,8 +40,8 @@ public final class NetworkSourceModule implements SourceHandlerBuilder {
         return this;
     }
 
-    @Override public SourceHandler build() {
-        return new SourceHandler.Builder(NetworkSource.class)
+    @Override public TypeHandler<NetworkSource> build() {
+        return TypeHandler.<NetworkSource>builder()
                 .handle("getNetworkChecker", new Handler(networkChecker))
                 .build();
     }

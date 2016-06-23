@@ -16,6 +16,9 @@
 
 package com.laynemobile.api;
 
+import com.laynemobile.api.annotations.GenerateApiBuilder;
+import com.laynemobile.api.internal.ApiLog;
+import com.laynemobile.api.sources.SourceHandlerBuilder;
 import com.squareup.javapoet.ArrayTypeName;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -41,10 +44,6 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.MirroredTypesException;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Types;
-
-import com.laynemobile.api.annotations.GenerateApiBuilder;
-import com.laynemobile.api.internal.ApiLog;
-import com.laynemobile.api.sources.SourceHandlerBuilder;
 
 import static com.laynemobile.api.Constants.Override;
 import static com.laynemobile.api.Constants.SourceModule;
