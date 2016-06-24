@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api.types;
+package com.laynemobile.api.processor;
 
-import com.laynemobile.api.Builder;
+import com.laynemobile.api.types.TypeHandler;
 
-public interface TypeHandlerBuilder<T> extends Builder<TypeHandler<T>> {}
+public interface ProcessorHandler<T, P, H> {
+    TypeHandler<H> typeHandler();
+
+    Processor.Extension<T, P> extension(H h);
+}

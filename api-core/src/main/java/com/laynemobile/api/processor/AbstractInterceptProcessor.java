@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api.types;
+package com.laynemobile.api.processor;
 
-import com.laynemobile.api.Builder;
+import org.immutables.value.Value;
 
-public interface TypeHandlerBuilder<T> extends Builder<TypeHandler<T>> {}
+@Value.Immutable
+@Style
+abstract class AbstractInterceptProcessor<T, P> extends InterceptProcessor<T, P> {}

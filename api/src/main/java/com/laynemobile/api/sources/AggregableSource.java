@@ -18,16 +18,28 @@ package com.laynemobile.api.sources;
 
 import com.laynemobile.api.Aggregable;
 import com.laynemobile.api.Params;
-import com.laynemobile.api.Processor.Interceptor;
 import com.laynemobile.api.Source;
 import com.laynemobile.api.internal.request.Interceptors;
+import com.laynemobile.api.processor.Processor;
+
+import rx.Observable;
 
 public interface AggregableSource<T, P extends Params> extends Source<T, P> {
     Aggregable getAggregable(P p);
 
-    class Transformer<T, P extends Params> implements Interceptor.Transformer<AggregableSource<T, P>, Interceptor<T, P>> {
-        @Override public Interceptor<T, P> call(final AggregableSource<T, P> source) {
-            return Interceptors.aggregate(source);
+    class Interceptor<T, P extends Params> implements Processor.Interceptor<T, P> {
+        private final Processor.Interceptor<T, P> actual;
+
+        private Interceptor(AggregableSource<T, P> source) {
+            this.actual = Interceptors.aggregate(source);
+        }
+
+        public static <T, P extends Params> Interceptor<T, P> from(AggregableSource<T, P> source) {
+            return new Interceptor<>(source);
+        }
+
+        @Override public Observable<T> intercept(Chain<T, P> chain) {
+            return actual.intercept(chain);
         }
     }
 }

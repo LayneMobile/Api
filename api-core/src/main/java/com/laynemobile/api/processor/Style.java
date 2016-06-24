@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api;
+package com.laynemobile.api.processor;
 
 import org.immutables.value.Value;
 

@@ -17,7 +17,7 @@
 package com.laynemobile.api.experimental;
 
 import com.laynemobile.api.Params;
-import com.laynemobile.api.Processor;
+import com.laynemobile.api.processor.Processor;
 import com.laynemobile.api.Source;
 import com.laynemobile.api.SourceProcessor;
 import com.laynemobile.api.internal.request.Interceptors;
@@ -26,6 +26,7 @@ import com.laynemobile.api.sources.NetworkSource;
 import com.laynemobile.api.sources.PreparableSource;
 import com.laynemobile.api.sources.SourceBuilder;
 import com.laynemobile.api.sources.modules.SourceModule;
+import com.laynemobile.api.types.TypeHandler;
 
 import rx.Subscriber;
 import rx.functions.Action2;
@@ -46,9 +47,9 @@ public class Source2Builder<T, P extends Params> {
                 .add();
     }
 
-//    private void addModule(Source2Handler<T, P> module) {
-//        builder.module(module);
-//    }
+    private void addModule(TypeHandler<? extends Source> module) {
+        builder.module(module);
+    }
 
     public final class Step1 {
         private final SourceModule<T, P> builder = new SourceModule<T, P>();
@@ -66,7 +67,7 @@ public class Source2Builder<T, P extends Params> {
         }
 
         public Step2 add() {
-//            addModule(builder.build());
+            addModule(builder.build());
             return new Step2();
         }
     }

@@ -16,6 +16,9 @@
 
 package com.laynemobile.api;
 
+import com.laynemobile.api.processor.InterceptProcessor;
+import com.laynemobile.api.processor.Processor;
+
 import org.immutables.value.Value;
 
 import rx.Observable;

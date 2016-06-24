@@ -17,25 +17,25 @@
 package com.laynemobile.api.sources;
 
 import com.laynemobile.api.Params;
-import com.laynemobile.api.Processor;
 import com.laynemobile.api.Source;
 import com.laynemobile.api.exceptions.NetworkUnavailableException;
 import com.laynemobile.api.internal.ApiLog;
+import com.laynemobile.api.processor.Processor;
 import com.laynemobile.api.util.NetworkChecker;
 
 public interface NetworkSource<T, P extends Params> extends Source<T, P> {
     NetworkChecker getNetworkChecker();
 
-    class Checker<P extends Params> implements Processor.Checker<P> {
+    class Checker<T, P extends Params> implements Processor.Checker<T, P> {
         private static final String TAG = Checker.class.getSimpleName();
 
-        private final NetworkSource<?, P> source;
+        private final NetworkSource<T, P> source;
 
-        private Checker(NetworkSource<?, P> source) {
+        private Checker(NetworkSource<T, P> source) {
             this.source = source;
         }
 
-        public static <P extends Params> Checker<P> from(NetworkSource<?, P> source) {
+        public static <T, P extends Params> Checker<T, P> from(NetworkSource<T, P> source) {
             return new Checker<>(source);
         }
 

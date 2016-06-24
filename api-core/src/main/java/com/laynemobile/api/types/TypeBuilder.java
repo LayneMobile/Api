@@ -36,18 +36,18 @@ import java.util.Set;
 
 public final class TypeBuilder<T> implements Builder<T> {
     private final TypeToken<T> baseType;
-    private final Set<TypeHandler<? extends T>> modules = new HashSet<>();
+    private final List<TypeHandler<? extends T>> handlers = new ArrayList<>();
 
     public TypeBuilder() {
         this.baseType = new TypeToken<T>() {};
     }
 
     public final TypeBuilder<T> module(TypeHandler<? extends T> module) {
-        if (this.modules.contains(module)) {
-            String msg = String.format("source type '%s' already defined", module.type);
+        if (contains(module.type)) {
+            String msg = String.format("handler type '%s' already defined", module.type);
             throw new IllegalStateException(msg);
         }
-        this.modules.add(module);
+        this.handlers.add(module);
         return this;
     }
 
@@ -63,8 +63,8 @@ public final class TypeBuilder<T> implements Builder<T> {
     }
 
     public final boolean contains(Class<?> type) {
-        for (TypeHandler<?> module : modules) {
-            if (module.type.equals(type)) {
+        for (TypeHandler<?> module : handlers) {
+            if (module.type.getRawType().equals(type)) {
                 return true;
             }
         }
@@ -85,13 +85,22 @@ public final class TypeBuilder<T> implements Builder<T> {
     }
 
     @Override public final T build() {
-        if (modules.isEmpty()) {
-            throw new IllegalStateException("no modules");
+        if (handlers.isEmpty()) {
+            throw new IllegalStateException("no handlers");
         } else if (!contains(baseType.getRawType())) {
             String msg = String.format(Locale.US, "must contain '%s' module", baseType);
             throw new IllegalStateException(msg);
         }
-        return create(baseType, modules);
+        return create(baseType, handlers);
+    }
+
+    private boolean contains(TypeToken<?> type) {
+        for (TypeHandler<?> module : handlers) {
+            if (module.type.equals(type)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @SuppressWarnings("unchecked")

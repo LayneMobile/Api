@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api;
+package com.laynemobile.api.processor;
 
 import com.google.common.collect.ImmutableList;
 
@@ -25,7 +25,7 @@ import rx.Observable;
 public abstract class InterceptProcessor<T, P> implements Processor<T, P> {
     public abstract Processor<T, P> processor();
 
-    public abstract List<Checker<P>> checkers();
+    public abstract List<Checker<T, P>> checkers();
 
     public abstract List<Modifier<T, P>> modifiers();
 
@@ -38,8 +38,8 @@ public abstract class InterceptProcessor<T, P> implements Processor<T, P> {
 
     private Observable<T> process(P p) {
         // Validate with checkers
-        List<Checker<P>> checkers = ImmutableList.copyOf(checkers());
-        for (Checker<P> checker : checkers) {
+        List<Checker<T, P>> checkers = ImmutableList.copyOf(checkers());
+        for (Checker<T, P> checker : checkers) {
             try {
                 checker.check(p);
             } catch (Exception e) {
@@ -63,22 +63,22 @@ public abstract class InterceptProcessor<T, P> implements Processor<T, P> {
     private final class Chain implements Interceptor.Chain<T, P> {
         private final ImmutableList<? extends Interceptor<T, P>> interceptors;
         private final int index;
-        private final P value;
+        private final P params;
 
         private Chain() {
             this.interceptors = ImmutableList.copyOf(interceptors());
             this.index = 0;
-            this.value = null;
+            this.params = null;
         }
 
-        private Chain(Chain prev, P value) {
+        private Chain(Chain prev, P params) {
             this.interceptors = prev.interceptors;
             this.index = prev.index + 1;
-            this.value = value;
+            this.params = params;
         }
 
         @Override public P params() {
-            return value;
+            return params;
         }
 
         @Override public Observable<T> proceed(P p) {

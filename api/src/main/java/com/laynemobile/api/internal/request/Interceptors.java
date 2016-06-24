@@ -17,7 +17,7 @@
 package com.laynemobile.api.internal.request;
 
 import com.laynemobile.api.Params;
-import com.laynemobile.api.Processor.Interceptor;
+import com.laynemobile.api.processor.Processor.Interceptor;
 import com.laynemobile.api.sources.AggregableSource;
 
 public final class Interceptors {

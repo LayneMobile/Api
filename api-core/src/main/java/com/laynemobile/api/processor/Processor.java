@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api;
+package com.laynemobile.api.processor;
 
 import rx.Observable;
 import rx.functions.Func1;
@@ -22,7 +22,10 @@ import rx.functions.Func2;
 
 public interface Processor<T, P> extends Func1<P, Observable<T>> {
 
-    interface Interceptor<T, P> {
+    // Marker interface
+    interface Extension<T, P> {}
+
+    interface Interceptor<T, P> extends Extension<T, P> {
         Observable<T> intercept(Chain<T, P> chain);
 
         interface Chain<T, P> {
@@ -30,14 +33,13 @@ public interface Processor<T, P> extends Func1<P, Observable<T>> {
 
             Observable<T> proceed(P p);
         }
-
-        interface Transformer<T, I extends Interceptor<?, ?>>
-                extends Func1<T, I> {}
     }
 
-    interface Checker<P> {
+    interface Checker<T, P> extends Extension<T, P> {
         void check(P p) throws Exception;
     }
 
-    interface Modifier<T, P> extends Func2<P, Observable<T>, Observable<T>> {}
+    interface Modifier<T, P>
+            extends Func2<P, Observable<T>, Observable<T>>,
+            Extension<T, P> {}
 }

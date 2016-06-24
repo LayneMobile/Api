@@ -17,7 +17,7 @@
 package com.laynemobile.api.sources;
 
 import com.laynemobile.api.Params;
-import com.laynemobile.api.Processor;
+import com.laynemobile.api.processor.Processor;
 import com.laynemobile.api.Source;
 
 import rx.Observable;

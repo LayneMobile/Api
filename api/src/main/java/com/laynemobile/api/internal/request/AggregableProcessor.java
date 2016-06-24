@@ -18,7 +18,7 @@ package com.laynemobile.api.internal.request;
 
 import com.laynemobile.api.Aggregable;
 import com.laynemobile.api.Params;
-import com.laynemobile.api.Processor;
+import com.laynemobile.api.processor.Processor;
 import com.laynemobile.api.sources.AggregableSource;
 
 import java.util.HashMap;

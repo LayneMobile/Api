@@ -22,11 +22,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TypeHandler<T> {
+public final class TypeHandler<T> {
     final TypeToken<T> type;
     final Map<String, List<MethodHandler>> handlers;
 
-    protected TypeHandler(Builder<T> builder) {
+    private TypeHandler(Builder<T> builder) {
         this.type = new TypeToken<T>() {};
         this.handlers = Collections.unmodifiableMap(builder.handlers);
     }
