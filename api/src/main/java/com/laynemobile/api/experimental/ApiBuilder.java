@@ -136,8 +136,7 @@ public final class ApiBuilder<T, P extends Params> {
         public final class AggregableSourceModuleBuilder {
             private final AggregateHandler<T, P> builder = new AggregateHandler<>();
 
-            private AggregableSourceModuleBuilder() {
-            }
+            private AggregableSourceModuleBuilder() {}
 
             public AggregableSourceModuleBuilder aggregate(Func1<P, Aggregable> action) {
                 builder.aggregate(action);
