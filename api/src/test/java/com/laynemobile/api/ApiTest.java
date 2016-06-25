@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import com.laynemobile.api.Aggregable;
-import com.laynemobile.api.Params;
+package com.laynemobile.api;
+
 import com.laynemobile.api.aggregables.SimpleAggregable;
 import com.laynemobile.api.experimental.ApiBuilder;
 import com.laynemobile.api.processor.Processor;

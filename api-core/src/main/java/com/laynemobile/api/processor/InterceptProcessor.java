@@ -21,6 +21,7 @@ import com.google.common.collect.ImmutableList;
 import java.util.List;
 
 import rx.Observable;
+import rx.functions.Func0;
 
 public abstract class InterceptProcessor<T, P> implements Processor<T, P> {
     public abstract Processor<T, P> processor();
@@ -31,47 +32,73 @@ public abstract class InterceptProcessor<T, P> implements Processor<T, P> {
 
     public abstract List<Interceptor<T, P>> interceptors();
 
-    @Override public final Observable<T> call(P p) {
-        return new Chain()
-                .proceed(p);
+    @Override public final Observable<T> call(final P p) {
+        return Observable.defer(new DeferFunction(p));
     }
 
-    private Observable<T> process(P p) {
-        // Validate with checkers
-        List<Checker<T, P>> checkers = ImmutableList.copyOf(checkers());
-        for (Checker<T, P> checker : checkers) {
-            try {
-                checker.check(p);
-            } catch (Exception e) {
-                return Observable.error(e);
+    private final class DeferFunction implements Func0<Observable<T>> {
+        private final ImmutableChain chain;
+        private final P params;
+
+        private DeferFunction(P params) {
+            this.chain = new ImmutableChain();
+            this.params = params;
+        }
+
+        @Override public Observable<T> call() {
+            return chain.proceed(params);
+        }
+    }
+
+    private final class ImmutableProcessor implements Processor<T, P> {
+        private final Processor<T, P> processor;
+        private final ImmutableList<Checker<T, P>> checkers;
+        private final ImmutableList<Modifier<T, P>> modifiers;
+
+        private ImmutableProcessor() {
+            this.processor = processor();
+            this.checkers = ImmutableList.copyOf(checkers());
+            this.modifiers = ImmutableList.copyOf(modifiers());
+        }
+
+        @Override public Observable<T> call(P p) {
+            // Validate with checkers
+            for (Checker<T, P> checker : checkers) {
+                try {
+                    checker.check(p);
+                } catch (Exception e) {
+                    return Observable.error(e);
+                }
             }
+
+            // Make actual call
+            Observable<T> result = processor.call(p);
+
+            // Allow modifications to original result
+            for (Modifier<T, P> modifier : modifiers) {
+                result = modifier.call(p, result);
+            }
+
+            // return potentially modified  result
+            return result;
         }
-
-        // Make actual call
-        Observable<T> result = processor().call(p);
-
-        // Allow modifications to original result
-        List<Modifier<T, P>> modifiers = ImmutableList.copyOf(modifiers());
-        for (Modifier<T, P> modifier : modifiers) {
-            result = modifier.call(p, result);
-        }
-
-        // return potentially modified  result
-        return result;
     }
 
-    private final class Chain implements Interceptor.Chain<T, P> {
+    private final class ImmutableChain implements Interceptor.Chain<T, P> {
+        private final ImmutableProcessor processor;
         private final ImmutableList<Interceptor<T, P>> interceptors;
         private final int index;
         private final P params;
 
-        private Chain() {
+        private ImmutableChain() {
+            this.processor = new ImmutableProcessor();
             this.interceptors = ImmutableList.copyOf(interceptors());
             this.index = 0;
             this.params = null;
         }
 
-        private Chain(Chain prev, P params) {
+        private ImmutableChain(ImmutableChain prev, P params) {
+            this.processor = prev.processor;
             this.interceptors = prev.interceptors;
             this.index = prev.index + 1;
             this.params = params;
@@ -88,11 +115,11 @@ public abstract class InterceptProcessor<T, P> implements Processor<T, P> {
                 return interceptors.get(index)
                         .intercept(next(p));
             }
-            return process(p);
+            return processor.call(p);
         }
 
-        private Chain next(P p) {
-            return new Chain(this, p);
+        private ImmutableChain next(P p) {
+            return new ImmutableChain(this, p);
         }
     }
 }
