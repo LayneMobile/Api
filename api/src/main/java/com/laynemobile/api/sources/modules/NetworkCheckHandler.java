@@ -25,6 +25,7 @@ import com.laynemobile.api.sources.NetworkSource;
 import com.laynemobile.api.types.MethodHandler;
 import com.laynemobile.api.types.MethodResult;
 import com.laynemobile.api.types.TypeHandler;
+import com.laynemobile.api.types.TypeToken;
 import com.laynemobile.api.util.NetworkChecker;
 
 import java.lang.reflect.Method;
@@ -44,7 +45,7 @@ public final class NetworkCheckHandler<T, P extends Params> implements Processor
     }
 
     @Override public ProcessorHandler<T, P, NetworkSource<T, P>> build() {
-        return build(TypeHandler.<NetworkSource<T, P>>builder()
+        return build(TypeHandler.builder(new TypeToken<NetworkSource<T, P>>() {})
                 .handle("getNetworkChecker", new Handler(networkChecker))
                 .build());
     }

@@ -27,7 +27,7 @@ public final class TypeHandler<T> {
     final Map<String, List<MethodHandler>> handlers;
 
     private TypeHandler(Builder<T> builder) {
-        this.type = new TypeToken<T>() {};
+        this.type = builder.type;
         this.handlers = Collections.unmodifiableMap(builder.handlers);
     }
 
@@ -42,15 +42,18 @@ public final class TypeHandler<T> {
         return type.hashCode();
     }
 
-    public static <T> Builder<T> builder() {
-        return new Builder<>();
+    public static <T> Builder<T> builder(TypeToken<T> type) {
+        return new Builder<>(type);
     }
 
     public static final class Builder<T> {
+        private final TypeToken<T> type;
         private final Map<String, List<MethodHandler>> handlers
                 = new HashMap<String, List<MethodHandler>>();
 
-        private Builder() {}
+        private Builder(TypeToken<T> type) {
+            this.type = type;
+        }
 
         public MethodBuilder<T> method(String methodName) {
             return new MethodBuilder<T>(this, methodName);

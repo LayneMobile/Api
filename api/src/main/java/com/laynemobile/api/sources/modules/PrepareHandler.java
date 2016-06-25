@@ -25,6 +25,7 @@ import com.laynemobile.api.sources.PreparableSource;
 import com.laynemobile.api.types.MethodHandler;
 import com.laynemobile.api.types.MethodResult;
 import com.laynemobile.api.types.TypeHandler;
+import com.laynemobile.api.types.TypeToken;
 
 import java.lang.reflect.Method;
 
@@ -41,8 +42,8 @@ public final class PrepareHandler<T, P extends Params> implements ProcessorHandl
     }
 
     @Override public ProcessorHandler<T, P, PreparableSource<T, P>> build() {
-        return build(TypeHandler.<PreparableSource<T, P>>builder()
-                .handle("prepareSourceRequest", new Handler<T, P>(func))
+        return build(TypeHandler.builder(new TypeToken<PreparableSource<T, P>>() {})
+                .handle("prepareSourceRequest", new Handler<>(func))
                 .build());
     }
 

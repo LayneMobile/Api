@@ -24,6 +24,7 @@ import com.laynemobile.api.sources.SourceHandlerBuilder;
 import com.laynemobile.api.types.MethodHandler;
 import com.laynemobile.api.types.MethodResult;
 import com.laynemobile.api.types.TypeHandler;
+import com.laynemobile.api.types.TypeToken;
 
 import java.lang.reflect.Method;
 
@@ -42,8 +43,8 @@ public final class AggregableSourceModule<P extends Params> implements SourceHan
         if (action == null) {
             throw new IllegalStateException("source must be set");
         }
-        return TypeHandler.<AggregableSource>builder()
-                .handle("getAggregable", new Handler<P>(action))
+        return TypeHandler.builder(new TypeToken<AggregableSource>() {})
+                .handle("getAggregable", new Handler<>(action))
                 .build();
     }
 

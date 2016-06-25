@@ -42,4 +42,8 @@ public interface Processor<T, P> extends Func1<P, Observable<T>> {
     interface Modifier<T, P>
             extends Func2<P, Observable<T>, Observable<T>>,
             Extension<T, P> {}
+
+    interface Parent<T, P>
+            extends Processor<T, P>,
+            Extension<T, P> {}
 }

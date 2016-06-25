@@ -21,6 +21,7 @@ import com.laynemobile.api.Params;
 import com.laynemobile.api.Source;
 import com.laynemobile.api.types.TypeBuilder;
 import com.laynemobile.api.types.TypeHandler;
+import com.laynemobile.api.types.TypeToken;
 
 import java.util.Collection;
 import java.util.List;
@@ -29,7 +30,7 @@ public final class SourceBuilder<T, P extends Params> implements Builder<Source<
     private final TypeBuilder<Source> source;
 
     public SourceBuilder() {
-        this.source = new TypeBuilder<>();
+        this.source = new TypeBuilder<>(TypeToken.get(Source.class));
     }
 
     public boolean contains(Class<? extends Source> type) {

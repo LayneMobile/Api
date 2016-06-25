@@ -28,18 +28,16 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
 
 public final class TypeBuilder<T> implements Builder<T> {
     private final TypeToken<T> baseType;
     private final List<TypeHandler<? extends T>> handlers = new ArrayList<>();
 
-    public TypeBuilder() {
-        this.baseType = new TypeToken<T>() {};
+    public TypeBuilder(TypeToken<T> baseType) {
+        this.baseType = baseType;
     }
 
     public final TypeBuilder<T> module(TypeHandler<? extends T> module) {
@@ -105,7 +103,7 @@ public final class TypeBuilder<T> implements Builder<T> {
 
     @SuppressWarnings("unchecked")
     private static <T> T create(TypeToken<T> baseType, Collection<TypeHandler<? extends T>> extensions) {
-        Set<Class<?>> classes = new HashSet<>();
+        List<Class<?>> classes = new ArrayList<>(extensions.size());
         Map<String, List<MethodHandler>> handlers = new HashMap<>();
         for (TypeHandler<? extends T> extension : extensions) {
             classes.add(extension.type.getRawType());

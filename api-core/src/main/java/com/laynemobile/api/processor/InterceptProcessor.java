@@ -61,7 +61,7 @@ public abstract class InterceptProcessor<T, P> implements Processor<T, P> {
     }
 
     private final class Chain implements Interceptor.Chain<T, P> {
-        private final ImmutableList<? extends Interceptor<T, P>> interceptors;
+        private final ImmutableList<Interceptor<T, P>> interceptors;
         private final int index;
         private final P params;
 
@@ -83,7 +83,7 @@ public abstract class InterceptProcessor<T, P> implements Processor<T, P> {
 
         @Override public Observable<T> proceed(P p) {
             int index = this.index;
-            List<? extends Interceptor<T, P>> interceptors = this.interceptors;
+            List<Interceptor<T, P>> interceptors = this.interceptors;
             if (index < interceptors.size()) {
                 return interceptors.get(index)
                         .intercept(next(p));

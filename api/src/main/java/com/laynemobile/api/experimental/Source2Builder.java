@@ -17,13 +17,9 @@
 package com.laynemobile.api.experimental;
 
 import com.laynemobile.api.Params;
-import com.laynemobile.api.processor.Processor;
 import com.laynemobile.api.Source;
-import com.laynemobile.api.SourceProcessor;
-import com.laynemobile.api.internal.request.Interceptors;
-import com.laynemobile.api.sources.AggregableSource;
-import com.laynemobile.api.sources.NetworkSource;
-import com.laynemobile.api.sources.PreparableSource;
+import com.laynemobile.api.SourceParent;
+import com.laynemobile.api.processor.Processor;
 import com.laynemobile.api.sources.SourceBuilder;
 import com.laynemobile.api.sources.modules.SourceModule;
 import com.laynemobile.api.types.TypeHandler;
@@ -80,23 +76,23 @@ public class Source2Builder<T, P extends Params> {
 
         Processor<T, P> requestProcessor() {
             Source<T, P> source = build();
-            SourceProcessor.Builder<T, P> b = SourceProcessor.<T, P>builder()
+            SourceParent.Builder<T, P> b = SourceParent.<T, P>builder()
                     .setSource(source);
 
-            // network checker
-            if (source instanceof NetworkSource) {
-                b.addCheckers(NetworkSource.Checker.from((NetworkSource<T, P>) source));
-            }
-
-            // preparable source modifier
-            if (source instanceof PreparableSource) {
-                b.addModifiers(PreparableSource.Modifier.from((PreparableSource<T, P>) source));
-            }
-
-            // Aggregate interceptor
-            if (source instanceof AggregableSource) {
-                b.addInterceptors(Interceptors.aggregate((AggregableSource<T, P>) source));
-            }
+//            // network checker
+//            if (source instanceof NetworkSource) {
+//                b.addCheckers(NetworkSource.Checker.from((NetworkSource<T, P>) source));
+//            }
+//
+//            // preparable source modifier
+//            if (source instanceof PreparableSource) {
+//                b.addModifiers(PreparableSource.Modifier.from((PreparableSource<T, P>) source));
+//            }
+//
+//            // Aggregate interceptor
+//            if (source instanceof AggregableSource) {
+//                b.addInterceptors(Interceptors.aggregate((AggregableSource<T, P>) source));
+//            }
 
             return b.build();
         }

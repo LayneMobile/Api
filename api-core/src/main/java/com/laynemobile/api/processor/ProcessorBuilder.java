@@ -22,27 +22,63 @@ import com.laynemobile.api.processor.Processor.Extension;
 import com.laynemobile.api.processor.Processor.Interceptor;
 import com.laynemobile.api.processor.Processor.Modifier;
 import com.laynemobile.api.types.TypeBuilder;
+import com.laynemobile.api.types.TypeToken;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class ProcessorBuilder<T, P, H> implements Builder<Processor<T, P>> {
+public final class ProcessorBuilder<T, P, H> implements Builder<Processor<T, P>> {
+    private final TypeBuilder<H> typeBuilder;
+    private ProcessorHandlerParent<T, P, H> parent;
     private final List<ProcessorHandler<T, P, ? extends H>> handlers = new ArrayList<>();
 
-    private ProcessorBuilder() {}
+    private ProcessorBuilder(TypeToken<H> type) {
+        this.typeBuilder = new TypeBuilder<>(type);
+    }
 
-    public final ProcessorBuilder<T, P, H> add(ProcessorHandler<T, P, ? extends H> handler) {
-        handlers.add(handler);
+    public static <T, P, H> ProcessorBuilder<T, P, H> create(TypeToken<H> type) {
+        return new ProcessorBuilder<>(type);
+    }
+
+    public ProcessorBuilder<T, P, H> add(ProcessorHandlerParent<T, P, H> parent) {
+        return add((ProcessorHandler<T, P, H>) parent);
+    }
+
+    @SuppressWarnings("unchecked")
+    public ProcessorBuilder<T, P, H> add(ProcessorHandler<T, P, ? extends H> handler) {
+        typeBuilder.module(handler.typeHandler());
+        if (handler instanceof ProcessorHandlerParent) {
+            parent = (ProcessorHandlerParent<T, P, H>) handler;
+        } else {
+            handlers.add(handler);
+        }
         return this;
     }
 
-    protected abstract Processor<T, P> processor(H h);
+    public ProcessorBuilder<T, P, H> addAll(ProcessorHandler<T, P, ? extends H>... handlers) {
+        for (ProcessorHandler<T, P, ? extends H> handler : handlers) {
+            add(handler);
+        }
+        return this;
+    }
+
+    public ProcessorBuilder<T, P, H> addAll(List<ProcessorHandler<T, P, ? extends H>> handlers) {
+        for (ProcessorHandler<T, P, ? extends H> handler : handlers) {
+            add(handler);
+        }
+        return this;
+    }
 
     @Override public final Processor<T, P> build() {
-        ImmutableInterceptProcessor.Builder<T, P> builder
-                = ImmutableInterceptProcessor.builder();
+        if (parent == null) {
+            throw new IllegalArgumentException("ProcessorHandlerParent cannot be null");
+        }
 
-        final H h = buildType();
+        final H h = typeBuilder.build();
+        final ImmutableInterceptProcessor.Builder<T, P> builder
+                = ImmutableInterceptProcessor.<T, P>builder()
+                .setProcessor(parent.extension(h));
+
         for (ProcessorHandler<T, P, ? extends H> handler : handlers) {
             Extension<T, P> extension = extension(handler, h);
             if (extension instanceof Checker) {
@@ -56,16 +92,7 @@ public abstract class ProcessorBuilder<T, P, H> implements Builder<Processor<T, 
             }
         }
 
-        return builder.setProcessor(processor(h))
-                .build();
-    }
-
-    private H buildType() {
-        final TypeBuilder<H> typeBuilder = new TypeBuilder<>();
-        for (ProcessorHandler<T, P, ? extends H> handler : handlers) {
-            typeBuilder.module(handler.typeHandler());
-        }
-        return typeBuilder.build();
+        return builder.build();
     }
 
     @SuppressWarnings("unchecked")

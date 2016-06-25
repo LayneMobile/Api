@@ -23,6 +23,7 @@ import com.laynemobile.api.sources.SourceHandlerBuilder;
 import com.laynemobile.api.types.MethodHandler;
 import com.laynemobile.api.types.MethodResult;
 import com.laynemobile.api.types.TypeHandler;
+import com.laynemobile.api.types.TypeToken;
 
 import java.lang.reflect.Method;
 
@@ -39,8 +40,8 @@ public final class PreparableSourceModule<T, P extends Params> implements Source
     }
 
     @Override public TypeHandler<PreparableSource> build() {
-        return TypeHandler.<PreparableSource>builder()
-                .handle("prepareSourceRequest", new Handler<T, P>(func))
+        return TypeHandler.builder(new TypeToken<PreparableSource>() {})
+                .handle("prepareSourceRequest", new Handler<>(func))
                 .build();
     }
 

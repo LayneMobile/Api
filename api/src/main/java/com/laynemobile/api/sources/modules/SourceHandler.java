@@ -18,8 +18,11 @@ package com.laynemobile.api.sources.modules;
 
 import com.laynemobile.api.Params;
 import com.laynemobile.api.Source;
+import com.laynemobile.api.SourceParent;
 import com.laynemobile.api.annotations.SourceHandlerModule;
-import com.laynemobile.api.sources.SourceHandlerBuilder;
+import com.laynemobile.api.processor.Processor;
+import com.laynemobile.api.processor.ProcessorHandlerParent;
+import com.laynemobile.api.processor.ProcessorHandlerParentBuilder;
 import com.laynemobile.api.types.MethodHandler;
 import com.laynemobile.api.types.MethodResult;
 import com.laynemobile.api.types.TypeHandler;
@@ -32,28 +35,43 @@ import rx.functions.Action2;
 import rx.functions.Func1;
 
 @SourceHandlerModule(Source.class)
-public final class SourceModule<T, P extends Params> implements SourceHandlerBuilder<Source> {
+public final class SourceHandler<T, P extends Params> implements ProcessorHandlerParentBuilder<T, P, Source<T, P>> {
     private Action2<P, Subscriber<? super T>> source;
 
-    public SourceModule<T, P> source(Action2<P, Subscriber<? super T>> source) {
+    public SourceHandler<T, P> source(Action2<P, Subscriber<? super T>> source) {
         this.source = source;
         return this;
     }
 
-    public SourceModule<T, P> source(Func1<P, T> source) {
+    public SourceHandler<T, P> source(Func1<P, T> source) {
         return sourceInternal(this, source);
     }
 
-    @Override public TypeHandler<Source> build() {
+    @Override public ProcessorHandlerParent<T, P, Source<T, P>> build() {
         if (source == null) {
             throw new IllegalStateException("source must be set");
         }
-        return TypeHandler.builder(new TypeToken<Source>() {})
+        return build(TypeHandler.builder(new TypeToken<Source<T, P>>() {})
                 .handle("call", new Handler<>(source))
-                .build();
+                .build());
     }
 
-    private static <T, P extends Params> SourceModule<T, P> sourceInternal(SourceModule<T, P> module,
+    private static <T, P extends Params> ProcessorHandlerParent<T, P, Source<T, P>> build(
+            final TypeHandler<Source<T, P>> typeHandler) {
+        return new ProcessorHandlerParent<T, P, Source<T, P>>() {
+            @Override public Processor.Parent<T, P> extension(Source<T, P> source) {
+                return SourceParent.<T, P>builder()
+                        .setSource(source)
+                        .build();
+            }
+
+            @Override public TypeHandler<Source<T, P>> typeHandler() {
+                return typeHandler;
+            }
+        };
+    }
+
+    private static <T, P extends Params> SourceHandler<T, P> sourceInternal(SourceHandler<T, P> module,
             final Func1<P, T> source) {
         // Create anonymous inner class in static context to avoid holding Module instance in memory
         return module.source(new Action2<P, Subscriber<? super T>>() {

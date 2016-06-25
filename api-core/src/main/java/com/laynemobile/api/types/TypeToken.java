@@ -41,7 +41,7 @@ import java.util.Map;
  * @author Sven Mawson
  * @author Jesse Wilson
  */
-class TypeToken<T> {
+public class TypeToken<T> {
     final Class<? super T> rawType;
     final Type type;
     final int hashCode;
@@ -52,7 +52,7 @@ class TypeToken<T> {
      * <p>Clients create an empty anonymous subclass. Doing so embeds the type parameter in the anonymous class's type
      * hierarchy so we can reconstitute it at runtime despite erasure.
      */
-    @SuppressWarnings("unchecked") TypeToken() {
+    @SuppressWarnings("unchecked") protected TypeToken() {
         this.type = getSuperclassTypeParameter(getClass());
         this.rawType = (Class<? super T>) $Api$Types.getRawType(type);
         this.hashCode = type.hashCode();

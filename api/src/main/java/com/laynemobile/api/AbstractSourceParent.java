@@ -16,7 +16,6 @@
 
 package com.laynemobile.api;
 
-import com.laynemobile.api.processor.InterceptProcessor;
 import com.laynemobile.api.processor.Processor;
 
 import org.immutables.value.Value;
@@ -25,30 +24,26 @@ import rx.Observable;
 import rx.Subscriber;
 
 @Value.Immutable
-abstract class AbstractSourceProcessor<T, P extends Params> extends InterceptProcessor<T, P> {
+abstract class AbstractSourceParent<T, P extends Params> implements Processor.Parent<T, P> {
+
     abstract Source<T, P> source();
 
-    @Value.Derived
-    @Override public Processor<T, P> processor() {
-        return new ProcessorImpl();
+    @Override public final Observable<T> call(P p) {
+        return Observable.create(new OnSubscribeImpl<>(source(), p));
     }
 
-    private final class ProcessorImpl implements Processor<T, P> {
-        @Override public Observable<T> call(P p) {
-            return Observable.create(new OnSubscribeImpl(p));
-        }
-    }
-
-    private final class OnSubscribeImpl implements Observable.OnSubscribe<T> {
+    private static final class OnSubscribeImpl<T, P extends Params> implements Observable.OnSubscribe<T> {
+        private final Source<T, P> source;
         private final P p;
 
-        private OnSubscribeImpl(P p) {
+        private OnSubscribeImpl(Source<T, P> source, P p) {
+            this.source = source;
             this.p = p;
         }
 
         @Override public void call(final Subscriber<? super T> subscriber) {
             if (subscriber.isUnsubscribed()) { return; }
-            source().call(p, new Subscriber<T>(subscriber) {
+            source.call(p, new Subscriber<T>(subscriber) {
                 @Override public void onCompleted() {
                     if (!subscriber.isUnsubscribed()) {
                         subscriber.onCompleted();
