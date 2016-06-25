@@ -36,12 +36,10 @@ public final class ProcessorBuilder<T, P, H> implements Builder<Processor<T, P>>
         this.typeBuilder = new TypeBuilder<>(type);
     }
 
-    public static <T, P, H> ProcessorBuilder<T, P, H> create(TypeToken<H> type) {
-        return new ProcessorBuilder<>(type);
-    }
-
-    public ProcessorBuilder<T, P, H> add(ProcessorHandlerParent<T, P, H> parent) {
-        return add((ProcessorHandler<T, P, H>) parent);
+    public static <T, P, H> ProcessorBuilder<T, P, H> create(TypeToken<H> type,
+            ProcessorHandlerParent<T, P, H> parent) {
+        return new ProcessorBuilder<T, P, H>(type)
+                .add(parent);
     }
 
     @SuppressWarnings("unchecked")

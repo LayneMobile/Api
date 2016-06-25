@@ -24,11 +24,8 @@ import rx.functions.Func1;
 import rx.functions.Func2;
 
 public final class ApiBuilder<T, P extends Params> {
-    private final TypeToken<Source<T, P>> type;
 
-    public ApiBuilder() {
-        this.type = new TypeToken<Source<T, P>>() {};
-    }
+    public ApiBuilder() {}
 
     public Extensions<T, P> source(Action2<P, Subscriber<? super T>> source) {
         return new SourceModuleBuilder()
@@ -58,16 +55,15 @@ public final class ApiBuilder<T, P extends Params> {
         }
 
         public Extensions<T, P> add() {
-            return new Extensions<>(type, builder.build());
+            return new Extensions<>(builder.build());
         }
     }
 
     public static final class Extensions<T, P extends Params> implements Builder<Processor<T, P>> {
         private final ProcessorBuilder<T, P, Source<T, P>> builder;
 
-        private Extensions(TypeToken<Source<T, P>> type, ProcessorHandlerParent<T, P, Source<T, P>> parent) {
-            builder = ProcessorBuilder.create(type);
-            builder.add(parent);
+        private Extensions(ProcessorHandlerParent<T, P, Source<T, P>> parent) {
+            this.builder = ProcessorBuilder.create(new TypeToken<Source<T, P>>() {}, parent);
         }
 
         public Extensions<T, P> requiresNetwork() {
