@@ -16,6 +16,7 @@
 
 package com.laynemobile.api.processor
 
+import com.laynemobile.api.ErrorHandlerProcessor
 import com.laynemobile.api.util.Result
 import com.laynemobile.api.util.resultTry
 import io.reactivex.Observable

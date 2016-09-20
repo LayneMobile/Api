@@ -37,11 +37,17 @@ class ApiTest {
     }
 
     @Test fun createApi() {
-        val api = buildApi<Params, Any> {
-            source { p ->
-                ApiLog.d(TAG, "source: $p")
-                p
+        fun _execute(param: Int, log: Boolean): String {
+            if (log) {
+                ApiLog.d(TAG, "executing: param = $param")
             }
+            return "${param + 10}"
+        }
+
+        fun execute(param: Int): String = _execute(param, true)
+
+        val api = buildApi<Int, String> {
+            source(::execute)
             requireNetwork {
                 ApiLog.d(TAG, "checking network")
                 true
@@ -55,9 +61,10 @@ class ApiTest {
                 observable
             }
         }
-        val expected = object : Params {}
-        val result = api.invoke(expected)
+        val param: Int = 5
+        val result = api.invoke(param)
                 .blockingLast()
-        Assert.assertEquals(expected, result)
+        ApiLog.d(TAG, "result: $result")
+        Assert.assertEquals(_execute(param, false), result)
     }
 }

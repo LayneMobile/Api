@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api.processor
+package com.laynemobile.api
 
 import com.laynemobile.api.util.Result
 import com.laynemobile.api.util.ifFailure

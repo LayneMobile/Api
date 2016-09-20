@@ -16,7 +16,7 @@
 
 package com.laynemobile.api.internal.request;
 
-import com.laynemobile.api.processor.Extension;
+import com.laynemobile.api.Extension;
 import com.laynemobile.api.sources.AggregableSource;
 
 import rx.Observable;

@@ -16,7 +16,7 @@
 
 package com.laynemobile.api.processor
 
-import com.laynemobile.api.Builder
+import com.laynemobile.api.*
 import com.laynemobile.api.util.copy
 import java.util.*
 

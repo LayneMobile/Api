@@ -18,24 +18,20 @@ package com.laynemobile.api.sources;
 
 import com.laynemobile.api.Aggregable
 import com.laynemobile.api.aggregables.simpleAggregable
-import com.laynemobile.api.processor.Extension
+import com.laynemobile.api.Extension
 import com.laynemobile.api.processor.ProcessorBuilder
 import io.reactivex.Observable
 
 interface AggregableSource<in T : Any?> : (T) -> Aggregable
 
-fun <T : Any?> ((T) -> Aggregable).toAggregableSource() = object : AggregableSource<T> {
-    override fun invoke(p1: T): Aggregable = this@toAggregableSource(p1)
-}
-
 private class AggregableInterceptor<T : Any, R : Any>
 internal constructor(
-        private val source: (T) -> Aggregable
+        private val aggregableSource: (T) -> Aggregable
 ) : Extension.Interceptor<T, Observable<R>>() {
 
     override fun intercept(chain: Chain<T, Observable<R>>): Observable<R> {
         val params: T = chain.value
-        val aggregable: Aggregable = source(params)
+        val aggregable: Aggregable = aggregableSource(params)
 
         return chain.proceed(params)
     }

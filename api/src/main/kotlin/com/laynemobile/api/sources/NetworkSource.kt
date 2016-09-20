@@ -18,7 +18,7 @@ package com.laynemobile.api.sources;
 
 import com.laynemobile.api.exceptions.NetworkUnavailableException
 import com.laynemobile.api.internal.ApiLog
-import com.laynemobile.api.processor.Extension
+import com.laynemobile.api.Extension
 import com.laynemobile.api.processor.ProcessorBuilder
 import com.laynemobile.api.util.NetworkChecker
 
