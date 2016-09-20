@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api
+@file:JvmName("RxUtil")
+
+package com.laynemobile.processor
 
 import com.laynemobile.result.Result
 import io.reactivex.Observable
 import io.reactivex.Single
-import io.reactivex.exceptions.CompositeException
-import io.reactivex.functions.BiFunction
 
 fun <T : Any> Observable<T>.mapToResult(): Observable<Result<T>> {
     return map { Result.success(it) }
@@ -40,13 +40,6 @@ fun <T : Any> Single<Result<T>>.flatMapResult(): Single<T> = flatMap { result ->
     })
 }
 
-fun <T : Any> Single<T>.zipResults(other: Single<T>) = zip(this.mapToResult(), other.mapToResult())
-
-fun <T : Any> zip(first: Single<Result<T>>, second: Single<Result<T>>): Single<T> {
-    val result: Single<Result<T>> = Single.zip(first, second, mergeBiFunction())
-    return result.flatMapResult()
-}
-
 inline fun <T : Any> singleTry(block: () -> T?): Single<T> = try {
     Single.just(block()!!)
 } catch (e: Throwable) {
@@ -58,25 +51,3 @@ inline fun <T : Any> observableTry(block: () -> T?): Observable<T> = try {
 } catch (e: Throwable) {
     Observable.error(e)
 }
-
-fun <T : Any> merge(primary: Result<T>, secondary: Result<T>): Result<T> = when (primary) {
-    is Result.Success -> {
-        when (secondary) {
-            is Result.Success -> primary
-            is Result.Failure -> secondary
-        }
-    }
-    is Result.Failure -> {
-        when (secondary) {
-            is Result.Success -> primary
-            is Result.Failure -> Result.failure(CompositeException(primary.error, secondary.error))
-        }
-    }
-}
-
-fun <T : Any> mergeBiFunction(): BiFunction<Result<T>, Result<T>, Result<T>> {
-    return BiFunction { t1, t2 -> merge(t1, t2) }
-}
-
-operator fun <T : Any> Result<T>.plus(other: Result<T>): Result<T> = merge(this, other)
-

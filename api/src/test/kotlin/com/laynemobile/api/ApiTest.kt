@@ -21,9 +21,11 @@ import com.laynemobile.api.extensions.aggregate
 import com.laynemobile.api.extensions.requireNetwork
 import com.laynemobile.api.internal.ApiLog
 import org.junit.After
-import org.junit.Assert
+import org.junit.Assert.assertEquals
+import org.junit.Assert.fail
 import org.junit.Before
 import org.junit.Test
+import java.util.*
 
 private val TAG: String = "ApiTest"
 
@@ -67,6 +69,37 @@ class ApiTest {
                 { error -> println("error: $error") }
         )
         ApiLog.d(TAG, "result: $result")
-        Assert.assertEquals(_execute(param, false), result)
+        assertEquals(_execute(param, false), result)
+    }
+
+    @Test fun createApi2() {
+        fun isNetworkAvailable(p1: Int): Boolean = (p1 % 2) == 0
+        fun mapper(p1: String): String = p1 + 3
+
+        val api = api({ p: Int -> p.toString() }) {
+            requireNetwork(::isNetworkAvailable)
+            aggregate()
+        }
+
+        val p1: Int = Random().nextInt()
+        var onNext: String? = null
+        var onError: Throwable? = null
+        api.request(p1)
+                .map(::mapper)
+                .subscribe({
+                    onNext = it
+                }, {
+                    onError = it
+                })
+
+        if (isNetworkAvailable(p1)) {
+            assertEquals(mapper("$p1"), onNext)
+            println("onNext: $onNext")
+        } else {
+            onError?.let {
+                println("onError: ${it.message}?")
+                it
+            } ?: fail("expected onError but was null")
+        }
     }
 }

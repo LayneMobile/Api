@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api.processor
+package com.laynemobile.processor
 
-import com.laynemobile.api.singleTry
-import com.laynemobile.processor.ErrorHandlingProcessor
 import io.reactivex.Single
 
 private fun <T : Any?, R : Any> ((T, Throwable) -> Single<R>)?.orDefault() = this ?: { t, throwable ->

@@ -16,12 +16,8 @@
 
 package com.laynemobile.api
 
-import com.laynemobile.api.extensions.aggregate
-import com.laynemobile.api.extensions.requireNetwork
-import com.laynemobile.api.processor.toObservableProcessor
 import com.laynemobile.processor.*
 import io.reactivex.Observable
-import java.util.*
 
 class Api<in T : Any, R : Any>
 internal constructor(
@@ -57,22 +53,4 @@ fun <T : Any, R : Any> api(
 ): Api<T, R> {
     return api(source)
             .build(initializer)
-}
-
-
-fun main(args: Array<String>) {
-    val api = api(source = { p: Int ->
-        p.toString()
-    }).build {
-        requireNetwork { it % 2 == 0 }
-        aggregate()
-    }
-
-    api.request(Random().nextInt(1000))
-            .map { it + 3 }
-            .subscribe({
-                println("num: $it")
-            }, {
-                println("error: ${it.message}")
-            })
 }

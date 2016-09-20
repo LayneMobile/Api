@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api.processor
+package com.laynemobile.processor
 
-import com.laynemobile.api.observableTry
-import com.laynemobile.processor.ErrorHandlingProcessor
 import io.reactivex.Observable
 
 private fun <T : Any?, R : Any> ((T, Throwable) -> Observable<R>)?.orDefault() = this ?: { t, throwable ->

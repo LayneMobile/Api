@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api.processor
+package com.laynemobile.processor
 
 //private class SingleSourceProcessor<in T : Any, R : Any>
 //internal constructor(

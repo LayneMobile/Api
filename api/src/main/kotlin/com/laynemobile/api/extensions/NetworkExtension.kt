@@ -45,6 +45,6 @@ internal constructor(
 // TODO: better default
 private fun <T : Any?> ((T) -> Boolean)?.orDefault(): (T) -> Boolean = this ?: { true }
 
-fun <T : Any> Extender<T, *>.requireNetwork(validator: ((T) -> Boolean)? = null) {
-    extend { NetworkValidator(validator.orDefault()) }
+fun <T : Any> Extender<T, *>.requireNetwork(isNetworkAvailable: ((T) -> Boolean)? = null) {
+    extend { NetworkValidator(isNetworkAvailable.orDefault()) }
 }
