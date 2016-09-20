@@ -16,8 +16,6 @@
 
 package com.laynemobile.api.subscriptions;
 
-import com.laynemobile.api.annotations.Keep;
-
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import rx.Observable;
@@ -52,7 +50,7 @@ public final class SubscriptionUtils {
 
         private final Subscription actual;
         private final CompositeSubscription parent;
-        @Keep private volatile int unsubscribed;
+        private volatile int unsubscribed;
 
         private ChildSubscription(Subscription actual, CompositeSubscription parent) {
             this.actual = actual;

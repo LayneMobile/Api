@@ -16,7 +16,6 @@
 
 package com.laynemobile.api.subscribers;
 
-import com.laynemobile.api.annotations.Keep;
 import com.laynemobile.api.exceptions.ApiException;
 
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
@@ -27,7 +26,7 @@ public abstract class ApiSubscriber<T> extends NotifyingSubscriber<T> {
     private static final AtomicIntegerFieldUpdater<ApiSubscriber> FINISHED_UPDATOR
             = AtomicIntegerFieldUpdater.newUpdater(ApiSubscriber.class, "finished");
 
-    @Keep private volatile int finished;
+    private volatile int finished;
     private volatile boolean calledSuper;
 
     protected ApiSubscriber() {

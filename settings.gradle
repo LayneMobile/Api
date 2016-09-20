@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-include 'api',
-        'api-core',
-        'api-annotations',
-        'api-compiler'
+include 'api'
 
 rootProject.name = 'com.laynemobile.api'

@@ -16,8 +16,6 @@
 
 package com.laynemobile.api.subscribers;
 
-import com.laynemobile.api.annotations.Keep;
-
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import kotlin.Unit;
@@ -85,7 +83,7 @@ public final class WeakSubscriber<T> extends Subscriber<T> {
                 = AtomicIntegerFieldUpdater.newUpdater(WeakSubscription.class, "unsubscribed");
 
         private final Delegate<?> parent;
-        @Keep private volatile int unsubscribed;
+        private volatile int unsubscribed;
 
         private <T> WeakSubscription(Delegate<T> parent, Subscriber<? super T> child) {
             parent.actual = child;

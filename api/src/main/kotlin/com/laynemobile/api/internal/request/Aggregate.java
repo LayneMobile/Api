@@ -17,7 +17,6 @@
 package com.laynemobile.api.internal.request;
 
 import com.laynemobile.api.Aggregable;
-import com.laynemobile.api.annotations.Keep;
 import com.laynemobile.api.exceptions.SourceCancelledException;
 import com.laynemobile.api.internal.ApiLog;
 
@@ -51,9 +50,9 @@ final class Aggregate<T> {
     private final AtomicReference<NotificationNode<T>> latest
             = new AtomicReference<NotificationNode<T>>(new NotificationNode<T>());
     private volatile Subscription subscription;
-    @Keep private volatile int subscribed;
-    @Keep private volatile int unsubscribed;
-    @Keep private volatile int completed;
+    private volatile int subscribed;
+    private volatile int unsubscribed;
+    private volatile int completed;
 
     Aggregate(Aggregable aggregable, Observable<T> request, Action1<Aggregate<T>> onComplete) {
         this.aggregable = aggregable;

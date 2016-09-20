@@ -16,7 +16,6 @@
 
 package com.laynemobile.api.subscribers;
 
-import com.laynemobile.api.annotations.Keep
 import rx.Subscriber
 import rx.Subscription
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater
@@ -48,7 +47,7 @@ abstract class NotifyingSubscriber<T> : Subscriber<T> {
     internal constructor(
             private val parent: NotifyingSubscriber<*>
     ) : Subscription {
-        @Keep @Volatile private var unsubscribed: Int = 0
+        @Volatile private var unsubscribed: Int = 0
 
         override fun unsubscribe() {
             if (UNSUBSCRIBED_UPDATER.compareAndSet(this, 0, 1)) {
