@@ -20,7 +20,8 @@ import com.laynemobile.api.extensions.SimpleAggregable
 import com.laynemobile.api.extensions.aggregate
 import com.laynemobile.api.extensions.requireNetwork
 import com.laynemobile.api.internal.ApiLog
-import org.junit.After
+import com.laynemobile.api.internal.request.fold
+import io.reactivex.Notification
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
 import org.junit.Before
@@ -32,9 +33,6 @@ private val TAG: String = "ApiTest"
 class ApiTest {
     @Before fun setup() {
         ApiLog.setLogger(ConsoleLogger())
-    }
-
-    @After fun teardown() {
     }
 
     @Test fun createApi() {
@@ -66,8 +64,14 @@ class ApiTest {
         var result: String? = null
         var error: Throwable? = null
         api.invoke(param)
-                .doOnNext { result = it }
-                .doOnError { error = it }
+                .materialize()
+                .doOnNext { n: Notification<String> ->
+                    n.fold(onNext = {
+                        result = it
+                    }, onError = {
+                        error = it
+                    }, onComplete = {})
+                }
                 .blockingLast()
         result?.let { ApiLog.d(TAG, "result: $it") }
         error?.let { ApiLog.e(TAG, "error", it) }
@@ -88,8 +92,14 @@ class ApiTest {
         var onError: Throwable? = null
         api.request(p1)
                 .map(::mapper)
-                .doOnNext { onNext = it }
-                .doOnError { onError = it }
+                .materialize()
+                .doOnNext { n: Notification<String> ->
+                    n.fold(onNext = {
+                        onNext = it
+                    }, onError = {
+                        onError = it
+                    }, onComplete = {})
+                }
                 .blockingLast()
 
         if (isNetworkAvailable(p1)) {
