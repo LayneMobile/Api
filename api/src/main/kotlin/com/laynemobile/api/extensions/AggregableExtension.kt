@@ -18,29 +18,27 @@
 
 package com.laynemobile.api.extensions;
 
-import com.laynemobile.api.Aggregable
-import com.laynemobile.api.aggregables.Aggregables
+import com.laynemobile.api.internal.request.AggregableProcessor
 import com.laynemobile.processor.Extender
-import com.laynemobile.processor.Extension
 import io.reactivex.Observable
 
-private class AggregableInterceptor<T : Any, R : Any>
-internal constructor(
-        private val aggregableSource: (T) -> Aggregable
-) : Extension.Interceptor<T, Observable<R>>() {
-
-    override fun invoke(chain: Chain<T, Observable<R>>): Observable<R> {
-        val params: T = chain.value
-        val aggregable: Aggregable = aggregableSource(params)
-
-        return chain.proceed(params)
-    }
+interface Aggregable {
+    val key: Any
+    val keepAliveSeconds: Int
+    val keepAliveOnError: Boolean
 }
 
+data class SimpleAggregable
+@JvmOverloads constructor(
+        override val key: Any,
+        override val keepAliveSeconds: Int = 10,
+        override val keepAliveOnError: Boolean = false
+) : Aggregable
+
 fun <T : Any, R : Any> Extender<T, Observable<R>>.aggregate(block: (T) -> Aggregable) {
-    extend { AggregableInterceptor(block) }
+    extend { AggregableProcessor(block) }
 }
 
 fun <T : Any, R : Any> Extender<T, Observable<R>>.aggregate() {
-    aggregate { Aggregables.simple(it) }
+    aggregate { SimpleAggregable(it) }
 }

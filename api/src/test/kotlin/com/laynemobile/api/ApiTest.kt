@@ -16,7 +16,7 @@
 
 package com.laynemobile.api;
 
-import com.laynemobile.api.aggregables.Aggregables
+import com.laynemobile.api.extensions.SimpleAggregable
 import com.laynemobile.api.extensions.aggregate
 import com.laynemobile.api.extensions.requireNetwork
 import com.laynemobile.api.internal.ApiLog
@@ -54,7 +54,7 @@ class ApiTest {
             }
             aggregate { p ->
                 ApiLog.d(TAG, "aggregating")
-                Aggregables.simple(key = p)
+                SimpleAggregable(key = p)
             }
             modify { params, observable ->
                 ApiLog.d(TAG, "modifying")
@@ -64,11 +64,13 @@ class ApiTest {
 
         val param: Int = 5
         var result: String? = null
+        var error: Throwable? = null
         api.invoke(param).subscribe(
-                { next -> result = next },
-                { error -> println("error: $error") }
+                { result = it },
+                { error = it }
         )
-        ApiLog.d(TAG, "result: $result")
+        result?.let { ApiLog.d(TAG, "result: $it") }
+        error?.let { ApiLog.e(TAG, "error", it) }
         assertEquals(_execute(param, false), result)
     }
 

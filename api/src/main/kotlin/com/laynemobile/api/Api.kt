@@ -43,7 +43,7 @@ internal constructor(
     )
 }
 
-fun <T : Any, R : Any> api(source: (T) -> R): ApiBuilder<T, R> {
+fun <T : Any, R : Any> apiBuilder(source: (T) -> R): ApiBuilder<T, R> {
     return ApiBuilder(source.toObservableProcessor())
 }
 
@@ -51,6 +51,6 @@ fun <T : Any, R : Any> api(
         source: ((T) -> R),
         initializer: (Extender<T, Observable<R>>.() -> Unit)
 ): Api<T, R> {
-    return api(source)
+    return apiBuilder(source)
             .build(initializer)
 }

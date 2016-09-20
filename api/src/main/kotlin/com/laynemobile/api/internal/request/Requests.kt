@@ -16,49 +16,94 @@
 
 package com.laynemobile.api.internal.request
 
-import rx.Notification
+import com.laynemobile.api.extensions.Aggregable
+import com.laynemobile.processor.Extension
+import io.reactivex.Observable
 import java.util.*
 
-
-internal class NotificationNode<T : Any?>
-@JvmOverloads constructor(
-        val prev: NotificationNode<T>? = null,
-        val current: Notification<T>? = null
-) {
-
-    fun update(current: Notification<T>): NotificationNode<T> {
-        return NotificationNode(this, current)
-    }
-
-    @JvmOverloads fun prevList(until: NotificationNode<T>? = null): List<Notification<T>> {
-        if (this == until) {
-            return emptyList()
-        }
-
-        var prev: NotificationNode<T>? = this.prev
-        var list: MutableList<Notification<T>>? = null
-        while (prev != null
-                && prev.current != null
-                && (until == null || prev != until)) {
-            if (list == null) {
-                list = ArrayList<Notification<T>>()
-            }
-            list.add(prev.current as Notification<T>)
-            prev = prev.prev
-        }
-        return list?.let {
-            Collections.reverse(it)
-            it
-        } ?: emptyList()
-    }
-
-    override fun toString(): String {
-        val string = StringBuilder("NotificationNode{").append("current=").append(current)
-        var prev: NotificationNode<T>? = this.prev
-        while (prev != null) {
-            string.append(",\n\n   prev=NotificationNode{").append("current=").append(prev.current).append("}")
-            prev = prev.prev
-        }
-        return string.append("}").toString()
+private fun <T : Any> Aggregate<T>.validOrNull(): Aggregate<T>? = let { a ->
+    if (a.isCompleted()) {
+        null
+    } else {
+        a
     }
 }
+
+private inline fun <T : Any> Aggregate<T>?.ifNotValid(block: () -> Aggregate<T>): Aggregate<T> {
+    return this?.validOrNull() ?: block()
+}
+
+internal class AggregableProcessor<T : Any, R : Any>
+internal constructor(
+        private val source: (T) -> Aggregable?
+) : Extension.Interceptor<T, Observable<R>>() {
+    private val aggregates = HashMap<Any, Aggregate<R>>(4)
+    private val onAggregateComplete = fun(aggregable: Aggregable) {
+        synchronized(aggregates) {
+            aggregates.remove(aggregable.key)
+        }
+    }
+
+    override fun invoke(chain: Extension.Interceptor.Chain<T, Observable<R>>): Observable<R> {
+        val p = chain.value
+        val aggregable = source.invoke(p)
+        val key = aggregable?.key
+        if (aggregable == null || key == null) {
+            return chain.proceed(p)
+        }
+
+        return getOrCreate(key = key, request = {
+            chain.proceed(p)
+        }, create = { request ->
+            Aggregate(aggregable, request, onAggregateComplete)
+        }).request.toObservable()
+    }
+
+    private fun get(key: Any): Aggregate<R>? = synchronized(aggregates) {
+        aggregates[key]
+    }
+
+    private inline fun getOrCreate(key: Any, block: () -> Aggregate<R>): Aggregate<R> = synchronized(aggregates) {
+        aggregates[key].ifNotValid {
+            val aggregate = block()
+            aggregates.put(key, aggregate)
+            aggregate
+        }
+    }
+
+    private inline fun getOrCreate(
+            key: Any,
+            request: () -> Observable<R>,
+            create: (Observable<R>) -> Aggregate<R>
+    ): Aggregate<R> {
+        return get(key).ifNotValid {
+            val r = request()
+            getOrCreate(key) { create(r) }
+        }
+    }
+
+    // TODO: expose peek*() in RequestProcessor
+    //    @Override public Observable<T> peekSourceRequest(P p) {
+    //        final Object aggregateKey;
+    //        final Aggregable aggregable = source.getAggregable(p);
+    //        if (aggregable != null && (aggregateKey = aggregable.key()) != null) {
+    //            final Aggregate<T> aggregate;
+    //            synchronized (aggregates) {
+    //                aggregate = aggregates.get(aggregateKey);
+    //            }
+    //            if (aggregate != null && !aggregate.isCompleted() && !aggregate.isUnsubscribed()) {
+    //                return aggregate.request;
+    //            }
+    //        }
+    //        return null;
+    //    }
+
+
+//    companion object {
+//
+//        fun <T, P> create(source: Function1<P, Aggregable>): AggregableProcessor<T, P> {
+//            return AggregableProcessor<Any, P>(source)
+//        }
+//    }
+}
+
