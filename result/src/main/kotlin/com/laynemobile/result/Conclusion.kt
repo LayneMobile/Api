@@ -17,10 +17,8 @@
 
 @file:JvmName("Conclusions")
 
-package com.laynemobile.api.util
+package com.laynemobile.result
 
-import org.funktionale.either.Disjunction
-import org.funktionale.option.Option
 import java.io.IOException
 
 
@@ -33,10 +31,6 @@ internal interface OutcomeLike<out T : Any, out E : Throwable> {
     fun get(): T
 
     fun toEither(): Either<E, T>
-
-    fun toOption(): Option<T>
-
-    fun toDisjunction(): Disjunction<E, T>
 
     fun toResult(): Result<T>
 
@@ -65,16 +59,6 @@ private constructor(
             throw it
         })
     }
-
-    final override fun toOption(): Option<T> {
-        return fold(success = {
-            Option.Some(it)
-        }, failure = {
-            Option.None
-        })
-    }
-
-    final override fun toDisjunction() = delegate.swap().toDisjunction()
 
     final override fun toEither() = delegate.swap()
 

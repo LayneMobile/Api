@@ -16,54 +16,49 @@
 
 package com.laynemobile.api.processor
 
-import io.reactivex.Observable
-import io.reactivex.ObservableEmitter
-import io.reactivex.Single
-import io.reactivex.SingleEmitter
-
-private class SingleSourceProcessor<in T : Any, R : Any>
-internal constructor(
-        private val source: (T, SingleEmitter<R>) -> Unit
-) : SingleProcessor<T, R> {
-    override fun invoke(p1: T): Single<R> = Single.create<R> { emitter ->
-        source(p1, emitter)
-    }
-}
-
-private class ObservableSourceProcessor<in T : Any, R : Any>
-internal constructor(
-        private val source: (T, ObservableEmitter<R>) -> Unit
-) : ObservableProcessor<T, R> {
-    override fun invoke(p1: T): Observable<R> = Observable.create { emitter ->
-        source(p1, emitter)
-    }
-}
-
-fun <T : Any, R : Any> ProcessorBuilder<T, Single<R>>.withSingleSource(block: (T, SingleEmitter<R>) -> Unit) {
-    withProcessor(SingleSourceProcessor(block))
-}
-
-fun <T : Any, R : Any> ProcessorBuilder<T, Single<R>>.withSingleSource(block: (T) -> R?) {
-    withSingleSource { t, emitter ->
-        try {
-            emitter.onSuccess(block(t)!!)
-        } catch (e: Throwable) {
-            emitter.onError(e)
-        }
-    }
-}
-
-fun <T : Any, R : Any> ProcessorBuilder<T, Observable<R>>.source(block: (T, ObservableEmitter<R>) -> Unit) {
-    withProcessor(ObservableSourceProcessor(block))
-}
-
-fun <T : Any, R : Any> ProcessorBuilder<T, Observable<R>>.source(block: (T) -> R?) {
-    source { t, emitter ->
-        try {
-            emitter.onNext(block(t)!!)
-            emitter.onComplete()
-        } catch (e: Throwable) {
-            emitter.onError(e)
-        }
-    }
-}
+//private class SingleSourceProcessor<in T : Any, R : Any>
+//internal constructor(
+//        private val source: (T, SingleEmitter<R>) -> Unit
+//) : SingleProcessor<T, R> {
+//    override fun invoke(p1: T): Single<R> = Single.create<R> { emitter ->
+//        source(p1, emitter)
+//    }
+//}
+//
+//private class ObservableSourceProcessor<in T : Any, R : Any>
+//internal constructor(
+//        private val source: (T, ObservableEmitter<R>) -> Unit
+//) : ObservableProcessor<T, R> {
+//    override fun invoke(p1: T): Observable<R> = Observable.create { emitter ->
+//        source(p1, emitter)
+//    }
+//}
+//
+//fun <T : Any, R : Any> ProcessorBuilder<T, Single<R>>.withSingleSource(block: (T, SingleEmitter<R>) -> Unit) {
+//    withProcessor(SingleSourceProcessor(block))
+//}
+//
+//fun <T : Any, R : Any> ProcessorBuilder<T, Single<R>>.withSingleSource(block: (T) -> R?) {
+//    withSingleSource { t, emitter ->
+//        try {
+//            emitter.onSuccess(block(t)!!)
+//        } catch (e: Throwable) {
+//            emitter.onError(e)
+//        }
+//    }
+//}
+//
+//fun <T : Any, R : Any> ProcessorBuilder<T, Observable<R>>.source(block: (T, ObservableEmitter<R>) -> Unit) {
+//    withProcessor(ObservableSourceProcessor(block))
+//}
+//
+//fun <T : Any, R : Any> ProcessorBuilder<T, Observable<R>>.source(block: (T) -> R?) {
+//    source { t, emitter ->
+//        try {
+//            emitter.onNext(block(t)!!)
+//            emitter.onComplete()
+//        } catch (e: Throwable) {
+//            emitter.onError(e)
+//        }
+//    }
+//}

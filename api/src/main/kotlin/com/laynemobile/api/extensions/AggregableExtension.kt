@@ -14,22 +14,22 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api.sources;
+@file:JvmName("AggregableExtension")
+
+package com.laynemobile.api.extensions;
 
 import com.laynemobile.api.Aggregable
-import com.laynemobile.api.aggregables.simpleAggregable
-import com.laynemobile.api.Extension
-import com.laynemobile.api.processor.ProcessorBuilder
+import com.laynemobile.api.aggregables.Aggregables
+import com.laynemobile.processor.Extender
+import com.laynemobile.processor.Extension
 import io.reactivex.Observable
-
-interface AggregableSource<in T : Any?> : (T) -> Aggregable
 
 private class AggregableInterceptor<T : Any, R : Any>
 internal constructor(
         private val aggregableSource: (T) -> Aggregable
 ) : Extension.Interceptor<T, Observable<R>>() {
 
-    override fun intercept(chain: Chain<T, Observable<R>>): Observable<R> {
+    override fun invoke(chain: Chain<T, Observable<R>>): Observable<R> {
         val params: T = chain.value
         val aggregable: Aggregable = aggregableSource(params)
 
@@ -37,10 +37,10 @@ internal constructor(
     }
 }
 
-fun <T : Any, R : Any> ProcessorBuilder<T, Observable<R>>.aggregate(block: (T) -> Aggregable) {
+fun <T : Any, R : Any> Extender<T, Observable<R>>.aggregate(block: (T) -> Aggregable) {
     extend { AggregableInterceptor(block) }
 }
 
-fun <T : Any, R : Any> ProcessorBuilder<T, Observable<R>>.aggregate() {
-    aggregate { simpleAggregable(it) }
+fun <T : Any, R : Any> Extender<T, Observable<R>>.aggregate() {
+    aggregate { Aggregables.simple(it) }
 }

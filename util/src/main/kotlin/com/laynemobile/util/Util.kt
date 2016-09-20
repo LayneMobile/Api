@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-include 'util',
-        'result',
-        'processor',
-        'api'
+@file:JvmName("Util")
 
-rootProject.name = 'com.laynemobile.api'
+package com.laynemobile.util
+
+import java.util.*
+
+fun <T : Any> List<T?>.copy(): List<T> = when (size) {
+    0 -> emptyList()
+    1 -> this[0]?.let { listOf(it) } ?: emptyList()
+    else -> filterNotNullTo(ArrayList<T>(size))
+}

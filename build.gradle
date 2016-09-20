@@ -27,9 +27,6 @@ buildscript {
     }
     dependencies {
         classpath "com.laynemobile.gradle:parent-plugin:1.0.0-SNAPSHOT"
-        classpath "com.neenbedankt.gradle.plugins:android-apt:${appGradleAptVersion}"
-        classpath "com.netflix.nebula:gradle-extra-configurations-plugin:${appGradleNebulaVersion}"
-        classpath "com.laynemobile.sourcerer:extensions-plugin:${appSourcererVersion}"
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:${appKotlinVersion}"
     }
 }

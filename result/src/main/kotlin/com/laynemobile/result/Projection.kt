@@ -16,9 +16,8 @@
 
 @file:JvmName("Projections")
 
-package com.laynemobile.api.util
+package com.laynemobile.result
 
-import org.funktionale.option.Option
 import java.util.*
 
 open class Projection<out T : Any>
@@ -48,14 +47,6 @@ protected constructor(
         }
     }
 
-    fun toOption(): Option<T> {
-        val e = delegate
-        return when (e) {
-            is Either.Left -> Option.Some(e.value)
-            is Either.Right -> Option.None
-        }
-    }
-
     companion object {
         fun <T : Any> delegate(projection: Projection<T>): Either<T, *> = projection.delegate
     }
@@ -82,20 +73,6 @@ class LeftProjection<out L : Any, out R : Any>(
     }
 
     inline fun <T : Any> map(f: (L) -> T): Either<T, R> = flatMap { Either.left<T, R>(f(it)) }
-
-    inline fun filter(predicate: (L) -> Boolean): Option<Either<L, R>> {
-        val e = either
-        return when (e) {
-            is Either.Left -> {
-                if (predicate(e.value)) {
-                    Option.Some(e)
-                } else {
-                    Option.None
-                }
-            }
-            is Either.Right -> Option.None
-        }
-    }
 }
 
 class RightProjection<out L : Any, out R : Any>(
@@ -111,20 +88,6 @@ class RightProjection<out L : Any, out R : Any>(
     }
 
     inline fun <T : Any> map(transform: (R) -> T): Either<L, T> = flatMap { Either.right<L, T>(transform(it)) }
-
-    inline fun filter(predicate: (R) -> Boolean): Option<Either<L, R>> {
-        val e = either
-        return when (e) {
-            is Either.Right -> {
-                if (predicate(e.value)) {
-                    Option.Some(e)
-                } else {
-                    Option.None
-                }
-            }
-            is Either.Left -> Option.None
-        }
-    }
 }
 
 inline fun <L : Any, R : Any, T : Any> LeftProjection<L, R>.flatMap(transform: (L) -> Either<T, R>): Either<T, R> {

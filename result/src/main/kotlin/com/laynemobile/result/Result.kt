@@ -16,10 +16,7 @@
 
 @file:JvmName("Results")
 
-package com.laynemobile.api.util
-
-import io.reactivex.exceptions.CompositeException
-import io.reactivex.functions.BiFunction
+package com.laynemobile.result
 
 sealed class Result<out T : Any> : Conclusion<T, Throwable> {
     constructor(value: T) : super(value)
@@ -104,24 +101,3 @@ fun <T : Any, E : Throwable> Result<T>.flatMapError(
     is Result.Success -> Outcome.success(value)
     is Result.Failure -> transform(error)
 }
-
-fun <T : Any> merge(primary: Result<T>, secondary: Result<T>): Result<T> = when (primary) {
-    is Result.Success -> {
-        when (secondary) {
-            is Result.Success -> primary
-            is Result.Failure -> secondary
-        }
-    }
-    is Result.Failure -> {
-        when (secondary) {
-            is Result.Success -> primary
-            is Result.Failure -> Result.failure(CompositeException(primary.error, secondary.error))
-        }
-    }
-}
-
-fun <T : Any> mergeBiFunction(): BiFunction<Result<T>, Result<T>, Result<T>> {
-    return BiFunction { t1, t2 -> merge(t1, t2) }
-}
-
-operator fun <T : Any> Result<T>.plus(other: Result<T>): Result<T> = merge(this, other)

@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-include 'util',
-        'result',
-        'processor',
-        'api'
+package com.laynemobile.processor
 
-rootProject.name = 'com.laynemobile.api'
+interface Processor<in T : Any?, out R : Any?> : (T) -> R {
+    @Throws(Exception::class)
+    override fun invoke(p1: T): R
+}

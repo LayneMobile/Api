@@ -14,14 +14,4 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api.util;
-
-interface NetworkChecker {
-    fun isNetworkAvailable(): Boolean
-
-    companion object {
-        val ALWAYS_AVAILABLE: NetworkChecker = object : NetworkChecker {
-            override fun isNetworkAvailable(): Boolean = true
-        }
-    }
-}
+apply from: "${rootDir}/gradle/kotlin-library.gradle"

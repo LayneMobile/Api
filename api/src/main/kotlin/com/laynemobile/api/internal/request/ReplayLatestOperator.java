@@ -56,7 +56,7 @@ final class ReplayLatestOperator<T> implements Observable.Operator<T, Observable
         boolean finished = false;
         final Notification<T> notification = getNotification(latest);
         if (notification != null) {
-            if (latest.prev != null && notification.getKind() != Notification.Kind.OnNext) {
+            if (latest.getPrev() != null && notification.getKind() != Notification.Kind.OnNext) {
                 long currentTime = System.currentTimeMillis();
                 long lastUpdatedTime = this.lastUpdatedTime;
                 long diff = currentTime - lastUpdatedTime;
@@ -112,7 +112,7 @@ final class ReplayLatestOperator<T> implements Observable.Operator<T, Observable
     }
 
     private Notification<T> getNotification(NotificationNode<T> node) {
-        return node == null ? null : node.current;
+        return node == null ? null : node.getCurrent();
     }
 
     interface Latest<T> {

@@ -16,14 +16,9 @@
 
 @file:JvmName("Eithers")
 
-package com.laynemobile.api.util
+package com.laynemobile.result
 
-import org.funktionale.either.Disjunction
-import org.funktionale.either.EitherLike
-import org.funktionale.either.LeftLike
-import org.funktionale.either.RightLike
-
-sealed class Either<out L : Any, out R : Any> : EitherLike {
+sealed class Either<out L : Any, out R : Any> {
 
     abstract val value: Any
 
@@ -33,14 +28,12 @@ sealed class Either<out L : Any, out R : Any> : EitherLike {
     abstract operator fun component1(): L?
     abstract operator fun component2(): R?
 
+    abstract fun isLeft(): Boolean
+    abstract fun isRight(): Boolean
+
     inline fun <T : Any?> fold(left: (L) -> T, right: (R) -> T): T = when (this) {
         is Left -> left(value)
         is Right -> right(value)
-    }
-
-    fun toDisjunction(): Disjunction<L, R> = when (this) {
-        is Right -> Disjunction.Right(value)
-        is Left -> Disjunction.Left(value)
     }
 
     fun swap(): Either<R, L> = when (this) {
@@ -51,9 +44,12 @@ sealed class Either<out L : Any, out R : Any> : EitherLike {
     class Left<out L : Any>
     private constructor(
             override val value: L
-    ) : Either<L, Nothing>(), LeftLike {
+    ) : Either<L, Nothing>() {
         override fun component1(): L = value
         override fun component2(): Nothing? = null
+
+        override fun isLeft() = true
+        override fun isRight() = false
 
         override fun hashCode() = value.hashCode()
 
@@ -74,9 +70,12 @@ sealed class Either<out L : Any, out R : Any> : EitherLike {
     class Right<out R : Any>
     private constructor(
             override val value: R
-    ) : Either<Nothing, R>(), RightLike {
+    ) : Either<Nothing, R>() {
         override fun component1(): Nothing? = null
         override fun component2(): R = value
+
+        override fun isLeft() = false
+        override fun isRight() = true
 
         override fun hashCode() = value.hashCode()
 

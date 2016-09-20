@@ -16,7 +16,7 @@
 
 @file:JvmName("Outcomes")
 
-package com.laynemobile.api.util
+package com.laynemobile.result
 
 sealed class Outcome<out T : Any, out E : Throwable> : Conclusion<T, E> {
 

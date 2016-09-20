@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-@file:JvmName("Aggregables")
-
 package com.laynemobile.api.aggregables
 
 import com.laynemobile.api.Aggregable
 
-@JvmOverloads
-fun simpleAggregable(key: Any, keepAliveSeconds: Int = 10, keepAliveOnError: Boolean = false): Aggregable {
-    return SimpleAggregable(key, keepAliveSeconds, keepAliveOnError)
+object Aggregables {
+    @JvmStatic
+    @JvmOverloads
+    fun simple(key: Any, keepAliveSeconds: Int = 10, keepAliveOnError: Boolean = false): Aggregable {
+        return SimpleAggregable(key, keepAliveSeconds, keepAliveOnError)
+    }
 }

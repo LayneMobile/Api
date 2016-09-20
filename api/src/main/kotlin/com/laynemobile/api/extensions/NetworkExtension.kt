@@ -14,37 +14,37 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api.sources;
+@file:JvmName("NetworkExtension")
+
+package com.laynemobile.api.extensions;
 
 import com.laynemobile.api.exceptions.NetworkUnavailableException
 import com.laynemobile.api.internal.ApiLog
-import com.laynemobile.api.Extension
-import com.laynemobile.api.processor.ProcessorBuilder
-import com.laynemobile.api.util.NetworkChecker
+import com.laynemobile.processor.Extender
+import com.laynemobile.processor.Extension
 
-private class NetworkSourceChecker<in T : Any?>
+private class NetworkValidator<in T : Any?>
 internal constructor(
         private val isNetworkAvailable: (T) -> Boolean
-) : Extension.Checker<T>() {
+) : Extension.Validator<T>() {
 
     private companion object {
-        private val TAG = NetworkSourceChecker::class.java.simpleName
+        private val TAG = NetworkValidator::class.java.simpleName
     }
 
-    @Throws(Exception::class)
-    override fun check(t: T) {
+    @Throws(NetworkUnavailableException::class)
+    override fun invoke(param: T) {
         ApiLog.d(TAG, "checking network connection")
-        if (!isNetworkAvailable(t)) {
+        if (!isNetworkAvailable(param)) {
             ApiLog.i(TAG, "not running request. no network")
             throw NetworkUnavailableException("no network")
         }
     }
 }
 
-fun <T : Any> ProcessorBuilder<T, *>.requireNetwork(block: (T) -> Boolean) {
-    extend { NetworkSourceChecker(block) }
-}
+// TODO: better default
+private fun <T : Any?> ((T) -> Boolean)?.orDefault(): (T) -> Boolean = this ?: { true }
 
-fun ProcessorBuilder<*, *>.requireNetwork(networkChecker: NetworkChecker = NetworkChecker.ALWAYS_AVAILABLE) {
-    requireNetwork { networkChecker.isNetworkAvailable() }
+fun <T : Any> Extender<T, *>.requireNetwork(validator: ((T) -> Boolean)? = null) {
+    extend { NetworkValidator(validator.orDefault()) }
 }

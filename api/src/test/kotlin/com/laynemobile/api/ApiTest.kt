@@ -16,15 +16,14 @@
 
 package com.laynemobile.api;
 
-import com.laynemobile.api.aggregables.simpleAggregable
+import com.laynemobile.api.aggregables.Aggregables
+import com.laynemobile.api.extensions.aggregate
+import com.laynemobile.api.extensions.requireNetwork
 import com.laynemobile.api.internal.ApiLog
-import com.laynemobile.api.processor.source
-import com.laynemobile.api.sources.aggregate
-import com.laynemobile.api.sources.requireNetwork
-import org.junit.After;
+import org.junit.After
 import org.junit.Assert
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.Before
+import org.junit.Test
 
 private val TAG: String = "ApiTest"
 
@@ -46,24 +45,27 @@ class ApiTest {
 
         fun execute(param: Int): String = _execute(param, true)
 
-        val api = buildApi<Int, String> {
-            source(::execute)
+        val api = api(::execute) {
             requireNetwork {
                 ApiLog.d(TAG, "checking network")
                 true
             }
             aggregate { p ->
                 ApiLog.d(TAG, "aggregating")
-                simpleAggregable(key = p)
+                Aggregables.simple(key = p)
             }
             modify { params, observable ->
                 ApiLog.d(TAG, "modifying")
                 observable
             }
         }
+
         val param: Int = 5
-        val result = api.invoke(param)
-                .blockingLast()
+        var result: String? = null
+        api.invoke(param).subscribe(
+                { next -> result = next },
+                { error -> println("error: $error") }
+        )
         ApiLog.d(TAG, "result: $result")
         Assert.assertEquals(_execute(param, false), result)
     }

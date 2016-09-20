@@ -16,47 +16,54 @@
 
 package com.laynemobile.api
 
-import com.laynemobile.api.processor.*
-import com.laynemobile.api.sources.aggregate
-import com.laynemobile.api.sources.requireNetwork
+import com.laynemobile.api.extensions.aggregate
+import com.laynemobile.api.extensions.requireNetwork
+import com.laynemobile.api.processor.toObservableProcessor
+import com.laynemobile.processor.*
 import io.reactivex.Observable
 import java.util.*
 
 class Api<in T : Any, R : Any>
 internal constructor(
-        processor: ErrorHandlerProcessor<T, Observable<R>>,
-        extensions: List<Extension<T, Observable<R>>> = emptyList()
-) : InterceptProcessor<T, Observable<R>>(processor, extensions) {
+        private val processor: ErrorHandlingProcessor<T, Observable<R>>,
+        private val extensions: Extensions<T, Observable<R>>
+) : Processor<T, Observable<R>> {
+
+    override fun invoke(p1: T): Observable<R> {
+        return processor.tryProcess(p1, extensions)
+    }
 
     fun request(params: T): Observable<R> = invoke(params)
 }
 
 class ApiBuilder<T : Any, R : Any>
-internal constructor() : ProcessorBuilder<T, Observable<R>>() {
+internal constructor(
+        private val processor: ErrorHandlingProcessor<T, Observable<R>>
+) : AbstractProcessorBuilder<T, Observable<R>, Api<T, R>>() {
 
-    fun withProcessor(processor: ObservableProcessor<T, R>) {
-        super.withProcessor(processor)
-    }
-
-    override fun withProcessor(function: (T) -> Observable<R>) {
-        withProcessor(observableProcessor(function))
-    }
-
-    override fun build(): Api<T, R> = Api(
+    override fun build(extensions: Extensions<T, Observable<R>>) = Api(
             processor = processor,
             extensions = extensions
     )
 }
 
-fun <T : Any, R : Any> buildApi(init: ApiBuilder<T, R>.() -> Unit): Api<T, R> {
-    val builder = ApiBuilder<T, R>()
-    builder.init()
-    return builder.build()
+fun <T : Any, R : Any> api(source: (T) -> R): ApiBuilder<T, R> {
+    return ApiBuilder(source.toObservableProcessor())
 }
 
+fun <T : Any, R : Any> api(
+        source: ((T) -> R),
+        initializer: (Extender<T, Observable<R>>.() -> Unit)
+): Api<T, R> {
+    return api(source)
+            .build(initializer)
+}
+
+
 fun main(args: Array<String>) {
-    val api = buildApi<Int, String> {
-        source { p: Int -> p.toString() }
+    val api = api(source = { p: Int ->
+        p.toString()
+    }).build {
         requireNetwork { it % 2 == 0 }
         aggregate()
     }

@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api.internal.request;
+apply from: "${rootDir}/gradle/kotlin-library.gradle"
 
-import com.laynemobile.api.Extension;
-import com.laynemobile.api.sources.AggregableSource;
-
-import rx.Observable;
-
-public final class Interceptors {
-    private Interceptors() { throw new AssertionError("no instances"); }
-
-    public static <T, R> Extension<T, Observable<R>> aggregate(AggregableSource<T> source) {
-        return AggregableProcessor.create(source);
-    }
+dependencies {
+    compile project(':result')
 }

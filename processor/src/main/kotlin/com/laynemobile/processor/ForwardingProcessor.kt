@@ -14,9 +14,14 @@
  * limitations under the License.
  */
 
-include 'util',
-        'result',
-        'processor',
-        'api'
+package com.laynemobile.processor
 
-rootProject.name = 'com.laynemobile.api'
+fun <T : Any?, R : Any?> ((T) -> R).toProcessor() = object : Processor<T, R> {
+    override fun invoke(p1: T): R = this@toProcessor(p1)
+}
+
+open class ForwardingProcessor<in T : Any?, out R : Any?>(
+        delegate: Processor<T, R>
+) : Processor<T, R> by delegate {
+    constructor(block: (T) -> R) : this(block.toProcessor())
+}

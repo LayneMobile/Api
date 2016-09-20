@@ -14,8 +14,24 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api;
+package com.laynemobile.processor
 
 interface Builder<out T : Any?> {
     fun build(): T
+}
+
+interface ProcessorBuilder<T : Any, R : Any> {
+    fun build(init: Extender<T, R>.() -> Unit): Processor<T, R>
+}
+
+abstract class AbstractProcessorBuilder<T : Any, R : Any, out P : Processor<T, R>>
+protected constructor() : ProcessorBuilder<T, R> {
+
+    protected abstract fun build(extensions: Extensions<T, R>): P
+
+    final override fun build(init: Extender<T, R>.() -> Unit): P {
+        val extender = DefaultExtender<T, R>()
+        extender.init()
+        return build(extender.build())
+    }
 }

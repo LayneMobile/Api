@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-include 'util',
-        'result',
-        'processor',
-        'api'
+apply from: "${rootDir}/gradle/java-library.gradle"
+apply plugin: 'kotlin'
 
-rootProject.name = 'com.laynemobile.api'
+dependencies {
+    compile "org.jetbrains.kotlin:kotlin-stdlib:${appKotlinVersion}"
+}
+
+sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
+}

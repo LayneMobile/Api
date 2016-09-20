@@ -17,31 +17,31 @@
 package com.laynemobile.api.internal.request;
 
 import com.laynemobile.api.Aggregable;
-import com.laynemobile.api.Extension;
-import com.laynemobile.api.sources.AggregableSource;
+import com.laynemobile.processor.Extension;
 
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import kotlin.jvm.functions.Function1;
 import rx.Observable;
 import rx.functions.Action1;
 
 class AggregableProcessor<T, P> extends Extension.Interceptor<P, Observable<T>> {
     private final Map<Object, Aggregate<T>> aggregates = new HashMap<>(4);
     private final OnAggregateComplete onAggregateComplete = new OnAggregateComplete();
-    private final AggregableSource<P> source;
+    private final Function1<P, Aggregable> source;
 
-    private AggregableProcessor(AggregableSource<P> source) {
+    private AggregableProcessor(Function1<P, Aggregable> source) {
         this.source = source;
     }
 
-    static <T, P> AggregableProcessor<T, P> create(AggregableSource<P> source) {
+    static <T, P> AggregableProcessor<T, P> create(Function1<P, Aggregable> source) {
         return new AggregableProcessor<>(source);
     }
 
-    @Override public Observable<T> intercept(@NotNull Chain<P, ? extends Observable<T>> chain) {
+    @Override public Observable<T> invoke(@NotNull Chain<P, ? extends Observable<T>> chain) {
         final P p = chain.getValue();
         final Object aggregateKey;
         final Aggregable aggregable = source.invoke(p);
