@@ -25,9 +25,10 @@ import io.reactivex.Notification
 import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.disposables.Disposables
 import io.reactivex.processors.PublishProcessor
 import io.reactivex.schedulers.Schedulers
-import io.reactivex.subscribers.ResourceSubscriber
+import io.reactivex.subscribers.DisposableSubscriber
 import org.reactivestreams.Subscription
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater
@@ -55,17 +56,23 @@ internal constructor(
     private val complete = completeFunction(onComplete)
     private val onSubscribe = onSubscribeFunction()
 
-    internal constructor(aggregable: Aggregable, source: Observable<T>, onComplete: (Aggregable) -> Unit) : this(
+    internal constructor(
+            aggregable: Aggregable,
+            source: Observable<T>,
+            onComplete: (Aggregable) -> Unit
+    ) : this(
             aggregable = aggregable,
             source = source.toFlowable(BackpressureStrategy.BUFFER),
             onComplete = onComplete
     )
 
     init {
-        this.request = publisher.doOnSubscribe(onSubscribe)
+        request = publisher.doOnSubscribe(onSubscribe)
                 .nest()
                 .lift(ReplayLatestOperator(AtomicLatest(latest)))
-                .defaultIfEmpty(null)
+        disposable.add(Disposables.fromAction {
+            complete()
+        })
     }
 
     fun hasSubscribed(): Boolean {
@@ -81,7 +88,7 @@ internal constructor(
     }
 
     override fun dispose() {
-        if (SUBSCRIBED_UPDATER.compareAndSet(this, 1, 2)) {
+        if (SUBSCRIBED_UPDATER.getAndSet(this, 2) == 1) {
             // We've subscribed
             val d = disposable
             if (!d.isDisposed) {
@@ -91,17 +98,14 @@ internal constructor(
                 publisher.onError(e)
             }
         }
-        SUBSCRIBED_UPDATER.set(this, 2)
         complete()
     }
 
     private fun updateLatest(notification: Notification<T>) {
-        var prev = this.latest.get()
-        var latest = prev + notification
-        while (!this.latest.compareAndSet(prev, latest)) {
-            prev = this.latest.get()
-            latest = prev + notification
-        }
+        do {
+            val prev = this.latest.get()
+            val latest = prev + notification
+        } while (!this.latest.compareAndSet(prev, latest))
     }
 
     private fun scheduleComplete() {
@@ -125,35 +129,11 @@ internal constructor(
         // Subscribe to the source observable here
         if (SUBSCRIBED_UPDATER.compareAndSet(this, 0, 1) && !isDisposed) {
             ApiLog.d(TAG, "onSubscribe aggregate source")
-            val d = source.subscribeWith(object : ResourceSubscriber<T>() {
-                override fun onComplete() {
-                    if (!isDisposed) {
-                        updateLatest(Notification.createOnComplete<T>())
-                        publisher.onComplete()
-                        scheduleComplete()
-                    }
-                }
-
-                override fun onError(e: Throwable) {
-                    if (!isDisposed) {
-                        updateLatest(Notification.createOnError<T>(e))
-                        publisher.onError(e)
-                        if (aggregable.keepAliveOnError) {
-                            scheduleComplete()
-                        } else {
-                            complete()
-                        }
-                    }
-                }
-
-                override fun onNext(t: T) {
-                    if (!isDisposed) {
-                        updateLatest(Notification.createOnNext(t))
-                        publisher.onNext(t)
-                    }
-                }
-            })
+            val d = source.subscribeWith(sourceSubscriber())
             disposable.add(d)
+            disposable.add(Disposables.fromAction {
+                subscription.cancel()
+            })
 
             // handle thread-race condition
             if (d.isDisposed) {
@@ -161,6 +141,35 @@ internal constructor(
                 val e = SourceCancelledException()
                 updateLatest(Notification.createOnError<T>(e))
                 publisher.onError(e)
+            }
+        }
+    }
+
+    private fun sourceSubscriber() = object : DisposableSubscriber<T>() {
+        override fun onComplete() {
+            if (!isDisposed) {
+                updateLatest(Notification.createOnComplete<T>())
+                publisher.onComplete()
+                scheduleComplete()
+            }
+        }
+
+        override fun onError(e: Throwable) {
+            if (!isDisposed) {
+                updateLatest(Notification.createOnError<T>(e))
+                publisher.onError(e)
+                if (aggregable.keepAliveOnError) {
+                    scheduleComplete()
+                } else {
+                    complete()
+                }
+            }
+        }
+
+        override fun onNext(t: T) {
+            if (!isDisposed) {
+                updateLatest(Notification.createOnNext(t))
+                publisher.onNext(t)
             }
         }
     }

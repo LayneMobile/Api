@@ -65,10 +65,10 @@ class ApiTest {
         val param: Int = 5
         var result: String? = null
         var error: Throwable? = null
-        api.invoke(param).subscribe(
-                { result = it },
-                { error = it }
-        )
+        api.invoke(param)
+                .doOnNext { result = it }
+                .doOnError { error = it }
+                .blockingLast()
         result?.let { ApiLog.d(TAG, "result: $it") }
         error?.let { ApiLog.e(TAG, "error", it) }
         assertEquals(_execute(param, false), result)
@@ -88,11 +88,9 @@ class ApiTest {
         var onError: Throwable? = null
         api.request(p1)
                 .map(::mapper)
-                .subscribe({
-                    onNext = it
-                }, {
-                    onError = it
-                })
+                .doOnNext { onNext = it }
+                .doOnError { onError = it }
+                .blockingLast()
 
         if (isNetworkAvailable(p1)) {
             assertEquals(mapper("$p1"), onNext)

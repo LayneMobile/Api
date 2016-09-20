@@ -18,5 +18,4 @@ apply from: "${rootDir}/gradle/kotlin-library.gradle"
 
 dependencies {
     compile project(':rx-processor')
-    compile "io.reactivex:rxjava:${appRxJavaVersion}"
 }

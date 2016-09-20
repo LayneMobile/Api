@@ -110,7 +110,7 @@ private abstract class BaseSubscriber<T : Any, S : Any?>
 protected constructor(
         protected val subscriber: Subscriber<in T>,
         protected val subscribedToSource: Boolean = false,
-        protected val current: AtomicReference<NotificationNode<T>> = AtomicReference<NotificationNode<T>>(),
+        protected val current: AtomicReference<NotificationNode<T>> = AtomicReference(NotificationNode<T>()),
         protected val postLatest: (Subscriber<in T>, AtomicReference<NotificationNode<T>>, Boolean) -> Boolean
 ) : DisposableSubscriber<S>() {
 
