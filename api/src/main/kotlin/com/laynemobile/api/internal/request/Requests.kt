@@ -17,7 +17,7 @@
 package com.laynemobile.api.internal.request
 
 import com.laynemobile.api.extensions.Aggregable
-import com.laynemobile.tailor.Alteration
+import com.laynemobile.api.Alteration
 import io.reactivex.Observable
 import java.util.*
 

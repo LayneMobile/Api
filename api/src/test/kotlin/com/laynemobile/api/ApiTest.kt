@@ -21,10 +21,10 @@ import com.laynemobile.api.extensions.aggregate
 import com.laynemobile.api.extensions.requireNetwork
 import com.laynemobile.api.internal.ApiLog
 import com.laynemobile.api.internal.request.fold
-import com.laynemobile.tailor.Api
-import com.laynemobile.tailor.buildApi
-import com.laynemobile.tailor.modify
-import com.laynemobile.tailor.observableSource
+import com.laynemobile.api.Api
+import com.laynemobile.api.buildApi
+import com.laynemobile.api.modify
+import com.laynemobile.api.observableSource
 import io.reactivex.Notification
 import io.reactivex.Observable
 import org.junit.Assert.assertEquals

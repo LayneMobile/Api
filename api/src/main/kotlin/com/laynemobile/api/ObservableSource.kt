@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-@file:JvmName("SourceUtil")
+package com.laynemobile.api
 
-package com.laynemobile.tailor
+import io.reactivex.Observable
 
-interface Source<out T : Any?, in R : Any?> {
-    fun source(source: (T) -> R): Unit
-}
-
-inline fun <T : Any?, R : Any?> Source<T, R>.source(block: () -> ((T) -> R)): Unit {
-    source(block())
-}
-
-fun <R : Any?> Source<*, R>.source(value: R): Unit {
-    source { value }
+fun <T : Any, R : Any> Source<T, Observable<R>>.observableSource(func: (T) -> R?): Unit {
+    source { p1: T ->
+        observableCreate { func(p1) }
+    }
 }

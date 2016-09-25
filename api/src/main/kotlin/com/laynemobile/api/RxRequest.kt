@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.laynemobile.tailor
+package com.laynemobile.api
 
 //interface SingleRequest<T : Any> : SingleSource<T>, Request<SingleObserver<in T>> {
 //    override fun subscribe(subscriber: SingleObserver<in T>)

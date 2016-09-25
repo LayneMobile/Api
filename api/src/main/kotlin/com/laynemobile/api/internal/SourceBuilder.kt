@@ -14,9 +14,25 @@
  * limitations under the License.
  */
 
-package com.laynemobile.tailor
+package com.laynemobile.api.internal
 
-interface ApiBuilder<T : Any?, R : Any?> : Builder<Api<T, R>> {
-    fun source(init: Source<T, R>.() -> Unit): Unit
-    fun tailor(init: Tailor<T, R>.() -> Unit): Unit
+import com.laynemobile.api.Source
+
+internal fun <T : Any?, R : Any?> buildSource(init: Source<T, R>.() -> Unit): (T) -> R {
+    val source = DefaultSource<T, R>()
+    source.init()
+    return source.get()
+}
+
+private class DefaultSource<T : Any?, R : Any?>
+internal constructor() : Source<T, R> {
+    private var _source: ((T) -> R)? = null
+
+    override fun source(source: (T) -> R) {
+        _source = source
+    }
+
+    internal fun get(): (T) -> R {
+        return _source!!
+    }
 }

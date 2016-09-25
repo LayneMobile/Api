@@ -14,12 +14,22 @@
  * limitations under the License.
  */
 
-package com.laynemobile.tailor
+package com.laynemobile.api.playground
 
-import io.reactivex.Single
+//interface RequestSource<in S : Any> {
+//    fun subscribe(subscriber: S)
+//}
+//
+//sealed class Request<T : Any, in S : Any> {
+//
+//    abstract fun subscribe(subscriber: S)
+//
+//    class RxSingle<T : Any>(
+//            val delegate: Single<T>
+//    ) : Request<T, SingleObserver<in T>>(), SingleSource<T> {
+//        override fun subscribe(subscriber: SingleObserver<in T>) {
+//            delegate.subscribe(subscriber)
+//        }
+//    }
+//}
 
-fun <T : Any, R : Any> Source<T, Single<R>>.singleSource(func: (T) -> R?): Unit {
-    source { p1: T ->
-        singleCreate { func(p1) }
-    }
-}

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.laynemobile.tailor.internal
+package com.laynemobile.api.internal
 
-import com.laynemobile.tailor.Api
-import com.laynemobile.tailor.ApiBuilder
-import com.laynemobile.tailor.Source
-import com.laynemobile.tailor.Tailor
+import com.laynemobile.api.Api
+import com.laynemobile.api.ApiBuilder
+import com.laynemobile.api.Source
+import com.laynemobile.api.Tailor
 
 internal class DefaultApiBuilder<T : Any?, R : Any?>
 internal constructor() : ApiBuilder<T, R> {

@@ -16,7 +16,7 @@
 
 @file:JvmName("TailorUtil")
 
-package com.laynemobile.tailor
+package com.laynemobile.api
 
 interface Tailor<out T : Any?, in R : Any?> {
     fun alter(alteration: Alteration<T, R>)

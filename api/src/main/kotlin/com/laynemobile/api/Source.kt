@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-apply from: "${rootDir}/gradle/kotlin-library.gradle"
+@file:JvmName("SourceUtil")
 
-dependencies {
-    compile project(':result')
+package com.laynemobile.api
+
+interface Source<out T : Any?, in R : Any?> {
+    fun source(source: (T) -> R): Unit
+}
+
+inline fun <T : Any?, R : Any?> Source<T, R>.source(block: () -> ((T) -> R)): Unit {
+    source(block())
+}
+
+fun <R : Any?> Source<*, R>.source(value: R): Unit {
+    source { value }
 }

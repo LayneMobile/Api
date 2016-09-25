@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.laynemobile.tailor.internal
+package com.laynemobile.api.internal
 
-import com.laynemobile.tailor.Alteration
-import com.laynemobile.tailor.Api
-import com.laynemobile.tailor.Tailor
-import com.laynemobile.tailor.api
+import com.laynemobile.api.Alteration
+import com.laynemobile.api.Api
+import com.laynemobile.api.Tailor
+import com.laynemobile.api.api
 import java.util.*
 
 internal fun <T : Any?, R : Any?> buildTailor(init: Tailor<T, R>.() -> Unit): ((T) -> R) -> Api<T, R> {

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-package com.laynemobile.tailor
+package com.laynemobile.api.internal
 
-interface Builder<out T : Any?> {
-    fun build(): T
+internal inline fun <T : Any?, R : Any?> T.to(block: (T) -> R): R {
+    return block(this)
 }

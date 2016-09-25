@@ -16,31 +16,34 @@
 
 package com.laynemobile.api
 
-import com.laynemobile.tailor.*
-import io.reactivex.Observable
+import com.laynemobile.api.internal.DefaultApiBuilder
 
-//@JvmName("apiBuilderFromCallable")
-//fun <T : Any, R : Any> apiBuilder(source: (T) -> R): ApiBuilder<T, R> {
-//    return ApiBuilder(source.toObservableProcessor())
-//}
-//
-//fun <T : Any, R : Any> apiBuilder(source: (T) -> Observable<R>): ApiBuilder<T, R> {
-//    return ApiBuilder(source.toProcessor())
-//}
-//
-//@JvmName("apiFromCallable")
-//fun <T : Any, R : Any> api(
-//        source: ((T) -> R),
-//        initializer: (Tailor<T, Observable<R>>.() -> Unit)
-//): Api<T, R> {
-//    return apiBuilder(source)
-//            .build(initializer)
-//}
-//
-//fun <T : Any, R : Any> api(
-//        source: ((T) -> Observable<R>),
-//        initializer: (Tailor<T, Observable<R>>.() -> Unit)
-//): Api<T, R> {
-//    return apiBuilder(source)
-//            .build(initializer)
-//}
+interface Api<in T : Any?, out R : Any?> {
+    fun request(p1: T): R
+}
+
+fun <T : Any?, R : Any?> buildApi(init: ApiBuilder<T, R>.() -> Unit): Api<T, R> {
+    val apiBuilder = DefaultApiBuilder<T, R>()
+    apiBuilder.init()
+    return apiBuilder.build()
+}
+
+fun <T : Any?, R : Any?> buildApi(source: Source<T, R>.() -> Unit, tailor: Tailor<T, R>.() -> Unit): Api<T, R> {
+    return buildApi {
+        source(source)
+        tailor(tailor)
+    }
+}
+
+inline fun <T : Any?, R : Any?> api(crossinline block: (T) -> R) = object : Api<T, R> {
+    override fun request(p1: T): R = block(p1)
+}
+
+inline fun <T : Any?, R1 : Any?, R2 : Any?> Api<T, R1>.andThen(
+        crossinline after: (R1) -> R2
+): Api<T, R2> = api { p1 -> after(request(p1)) }
+
+inline fun <T1 : Any?, T2 : Any, R : Any?> Api<T1, R>.compose(
+        crossinline before: (T2) -> T1
+): Api<T2, R> = api { p1 -> request(before(p1)) }
+

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package com.laynemobile.tailor
+package com.laynemobile.api
 
-import io.reactivex.Observable
+import io.reactivex.Single
 
-fun <T : Any, R : Any> Source<T, Observable<R>>.observableSource(func: (T) -> R?): Unit {
+fun <T : Any, R : Any> Source<T, Single<R>>.singleSource(func: (T) -> R?): Unit {
     source { p1: T ->
-        observableCreate { func(p1) }
+        singleCreate { func(p1) }
     }
 }

@@ -14,8 +14,23 @@
  * limitations under the License.
  */
 
-package com.laynemobile.tailor.internal
+package com.laynemobile.api
 
-internal inline fun <T : Any?, R : Any?> T.to(block: (T) -> R): R {
-    return block(this)
+import io.reactivex.Observable
+
+interface ObservableApi<in T : Any, R : Any> : Api<T, Observable<R>>
+
+fun <T : Any, R : Any> Api<T, R?>.toObservableApi() = object : ObservableApi<T, R> {
+    override fun request(p1: T): Observable<R> = observableCreate {
+        this@toObservableApi.request(p1)
+    }
 }
+
+/*
+fun stuff() {
+    val api: Api<Int, String> = api {
+        source { }
+        alter { }
+    }
+}
+*/

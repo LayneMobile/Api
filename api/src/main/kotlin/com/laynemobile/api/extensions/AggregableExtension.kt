@@ -19,8 +19,8 @@
 package com.laynemobile.api.extensions;
 
 import com.laynemobile.api.internal.request.AggregableProcessor
-import com.laynemobile.tailor.Tailor
-import com.laynemobile.tailor.alter
+import com.laynemobile.api.Tailor
+import com.laynemobile.api.alter
 import io.reactivex.Observable
 
 interface Aggregable {

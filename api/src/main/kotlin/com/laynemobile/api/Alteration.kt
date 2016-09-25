@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.laynemobile.tailor
+package com.laynemobile.api
 
 sealed class Alteration<in T : Any?, out R : Any?> {
 

@@ -14,23 +14,8 @@
  * limitations under the License.
  */
 
-package com.laynemobile.tailor
+package com.laynemobile.api
 
-import io.reactivex.Observable
-
-interface ObservableApi<in T : Any, R : Any> : Api<T, Observable<R>>
-
-fun <T : Any, R : Any> Api<T, R?>.toObservableApi() = object : ObservableApi<T, R> {
-    override fun request(p1: T): Observable<R> = observableCreate {
-        this@toObservableApi.request(p1)
-    }
+interface Builder<out T : Any?> {
+    fun build(): T
 }
-
-/*
-fun stuff() {
-    val api: Api<Int, String> = api {
-        source { }
-        alter { }
-    }
-}
-*/

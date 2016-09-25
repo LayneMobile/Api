@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.laynemobile.tailor.internal
+package com.laynemobile.api.internal
 
-import com.laynemobile.tailor.Alteration
+import com.laynemobile.api.Alteration
 import java.util.*
 
 internal fun <T : Any?> Collection<Alteration<T, *>>.validators(): List<Alteration.Validator<T>> {

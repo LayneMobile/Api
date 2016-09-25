@@ -16,8 +16,6 @@
 
 include 'util',
         'result',
-        'processor',
-        'rx-processor',
         'api',
         'retrofit-api'
 

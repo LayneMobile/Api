@@ -16,7 +16,7 @@
 
 @file:JvmName("RxUtil")
 
-package com.laynemobile.tailor
+package com.laynemobile.api
 
 import com.laynemobile.result.Result
 import io.reactivex.Observable
