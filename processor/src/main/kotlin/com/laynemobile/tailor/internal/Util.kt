@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-include 'util',
-        'result',
-        'processor',
-        'rx-processor',
-        'api',
-        'retrofit-api'
+package com.laynemobile.tailor.internal
 
-rootProject.name = 'com.laynemobile.api'
+internal inline fun <T : Any?, R : Any?> T.to(block: (T) -> R): R {
+    return block(this)
+}

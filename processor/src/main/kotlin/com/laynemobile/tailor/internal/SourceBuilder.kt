@@ -14,23 +14,25 @@
  * limitations under the License.
  */
 
-package com.laynemobile.processor
+package com.laynemobile.tailor.internal
 
-import com.laynemobile.result.Result
-import com.laynemobile.result.resultTry
-import com.laynemobile.result.toResult
+import com.laynemobile.tailor.Source
 
-private fun <T : Any?, R : Any> ((T, Throwable) -> Result<R>)?.orDefault() = this ?: { t, throwable ->
-    throwable.toResult<R>()
+internal fun <T : Any?, R : Any?> buildSource(init: Source<T, R>.() -> Unit): (T) -> R {
+    val source = DefaultSource<T, R>()
+    source.init()
+    return source.get()
 }
 
-fun <T : Any?, R : Any> resultProcessor(
-        processor: (T) -> Result<R>,
-        errorHandler: ((T, Throwable) -> Result<R>)? = null
-) = processor.withErrorHandler(errorHandler.orDefault())
+private class DefaultSource<T : Any?, R : Any?>
+internal constructor() : Source<T, R> {
+    private var _source: ((T) -> R)? = null
 
-fun <T : Any?, R : Any> ((T) -> R?).toResultProcessor() = resultProcessor({ t: T ->
-    resultTry { this@toResultProcessor(t) }
-})
+    override fun source(source: (T) -> R) {
+        _source = source
+    }
 
-
+    internal fun get(): (T) -> R {
+        return _source!!
+    }
+}

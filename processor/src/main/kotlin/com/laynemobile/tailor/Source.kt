@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-include 'util',
-        'result',
-        'processor',
-        'rx-processor',
-        'api',
-        'retrofit-api'
+@file:JvmName("SourceUtil")
 
-rootProject.name = 'com.laynemobile.api'
+package com.laynemobile.tailor
+
+interface Source<out T : Any?, in R : Any?> {
+    fun source(source: (T) -> R): Unit
+}
+
+inline fun <T : Any?, R : Any?> Source<T, R>.source(block: () -> ((T) -> R)): Unit {
+    source(block())
+}
+
+fun <R : Any?> Source<*, R>.source(value: R): Unit {
+    source { value }
+}

@@ -16,41 +16,31 @@
 
 package com.laynemobile.api
 
-import com.laynemobile.processor.*
+import com.laynemobile.tailor.*
 import io.reactivex.Observable
 
-class Api<in T : Any, R : Any>
-internal constructor(
-        private val processor: ErrorHandlingProcessor<T, Observable<R>>,
-        private val extensions: Extensions<T, Observable<R>>
-) : Processor<T, Observable<R>> {
-
-    override fun invoke(p1: T): Observable<R> {
-        return processor.tryProcess(p1, extensions)
-    }
-
-    fun request(params: T): Observable<R> = invoke(params)
-}
-
-class ApiBuilder<T : Any, R : Any>
-internal constructor(
-        private val processor: ErrorHandlingProcessor<T, Observable<R>>
-) : AbstractProcessorBuilder<T, Observable<R>, Api<T, R>>() {
-
-    override fun build(extensions: Extensions<T, Observable<R>>) = Api(
-            processor = processor,
-            extensions = extensions
-    )
-}
-
-fun <T : Any, R : Any> apiBuilder(source: (T) -> R): ApiBuilder<T, R> {
-    return ApiBuilder(source.toObservableProcessor())
-}
-
-fun <T : Any, R : Any> api(
-        source: ((T) -> R),
-        initializer: (Extender<T, Observable<R>>.() -> Unit)
-): Api<T, R> {
-    return apiBuilder(source)
-            .build(initializer)
-}
+//@JvmName("apiBuilderFromCallable")
+//fun <T : Any, R : Any> apiBuilder(source: (T) -> R): ApiBuilder<T, R> {
+//    return ApiBuilder(source.toObservableProcessor())
+//}
+//
+//fun <T : Any, R : Any> apiBuilder(source: (T) -> Observable<R>): ApiBuilder<T, R> {
+//    return ApiBuilder(source.toProcessor())
+//}
+//
+//@JvmName("apiFromCallable")
+//fun <T : Any, R : Any> api(
+//        source: ((T) -> R),
+//        initializer: (Tailor<T, Observable<R>>.() -> Unit)
+//): Api<T, R> {
+//    return apiBuilder(source)
+//            .build(initializer)
+//}
+//
+//fun <T : Any, R : Any> api(
+//        source: ((T) -> Observable<R>),
+//        initializer: (Tailor<T, Observable<R>>.() -> Unit)
+//): Api<T, R> {
+//    return apiBuilder(source)
+//            .build(initializer)
+//}

@@ -14,19 +14,23 @@
  * limitations under the License.
  */
 
-apply plugin: 'groovy'
-apply from: "${rootDir}/gradle/abstract-library.gradle"
+package com.laynemobile.tailor
 
-task groovydocJar(type: Jar, dependsOn: groovydoc) {
-    classifier = 'groovydoc'
-    from groovydoc.destinationDir
-    encoding = 'UTF-8'
+import io.reactivex.Observable
+
+interface ObservableApi<in T : Any, R : Any> : Api<T, Observable<R>>
+
+fun <T : Any, R : Any> Api<T, R?>.toObservableApi() = object : ObservableApi<T, R> {
+    override fun request(p1: T): Observable<R> = observableCreate {
+        this@toObservableApi.request(p1)
+    }
 }
 
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-    archives groovydocJar
+/*
+fun stuff() {
+    val api: Api<Int, String> = api {
+        source { }
+        alter { }
+    }
 }
-
-apply from: "${rootDir}/gradle/install.gradle"
+*/

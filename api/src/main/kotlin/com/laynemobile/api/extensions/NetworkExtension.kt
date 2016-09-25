@@ -20,13 +20,14 @@ package com.laynemobile.api.extensions;
 
 import com.laynemobile.api.exceptions.NetworkUnavailableException
 import com.laynemobile.api.internal.ApiLog
-import com.laynemobile.processor.Extender
-import com.laynemobile.processor.Extension
+import com.laynemobile.tailor.Alteration
+import com.laynemobile.tailor.Tailor
+import com.laynemobile.tailor.alter
 
-private class NetworkValidator<in T : Any?>
+private class NetworkValidator<in T : Any>
 internal constructor(
         private val isNetworkAvailable: (T) -> Boolean
-) : Extension.Validator<T>() {
+) : Alteration.Validator<T>() {
 
     private companion object {
         private val TAG = NetworkValidator::class.java.simpleName
@@ -42,9 +43,6 @@ internal constructor(
     }
 }
 
-// TODO: better default
-private fun <T : Any?> ((T) -> Boolean)?.orDefault(): (T) -> Boolean = this ?: { true }
-
-fun <T : Any> Extender<T, *>.requireNetwork(isNetworkAvailable: ((T) -> Boolean)? = null) {
-    extend { NetworkValidator(isNetworkAvailable.orDefault()) }
+fun <T : Any> Tailor<T, *>.requireNetwork(isNetworkAvailable: ((T) -> Boolean)) {
+    alter { NetworkValidator(isNetworkAvailable) }
 }

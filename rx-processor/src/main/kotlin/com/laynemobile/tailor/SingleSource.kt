@@ -14,5 +14,12 @@
  * limitations under the License.
  */
 
-apply plugin: 'com.neenbedankt.android-apt'
-apply plugin: 'sourcerer-android'
+package com.laynemobile.tailor
+
+import io.reactivex.Single
+
+fun <T : Any, R : Any> Source<T, Single<R>>.singleSource(func: (T) -> R?): Unit {
+    source { p1: T ->
+        singleCreate { func(p1) }
+    }
+}

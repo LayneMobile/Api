@@ -17,7 +17,7 @@
 package com.laynemobile.api.internal.request
 
 import com.laynemobile.api.extensions.Aggregable
-import com.laynemobile.processor.Extension
+import com.laynemobile.tailor.Alteration
 import io.reactivex.Observable
 import java.util.*
 
@@ -33,10 +33,10 @@ private inline fun <T : Any> Aggregate<T>?.ifNotValid(block: () -> Aggregate<T>)
     return this?.validOrNull() ?: block()
 }
 
-internal class AggregableProcessor<T : Any, R : Any>
+internal class AggregableProcessor<T : Any?, R : Any>
 internal constructor(
         private val source: (T) -> Aggregable?
-) : Extension.Interceptor<T, Observable<R>>() {
+) : Alteration.Interceptor<T, Observable<R>>() {
     private val aggregates = HashMap<Any, Aggregate<R>>(4)
     private val onAggregateComplete = fun(aggregable: Aggregable) {
         synchronized(aggregates) {
@@ -44,7 +44,7 @@ internal constructor(
         }
     }
 
-    override fun invoke(chain: Extension.Interceptor.Chain<T, Observable<R>>): Observable<R> {
+    override fun invoke(chain: Alteration.Interceptor.Chain<T, Observable<R>>): Observable<R> {
         val p = chain.value
         val aggregable = source.invoke(p)
         val key = aggregable?.key

@@ -16,16 +16,12 @@
 
 @file:JvmName("RxUtil")
 
-package com.laynemobile.processor
+package com.laynemobile.tailor
 
 import com.laynemobile.result.Result
 import io.reactivex.Observable
 import io.reactivex.Single
 
-fun <T : Any> Observable<T>.mapToResult(): Observable<Result<T>> {
-    return map { Result.success(it) }
-            .onErrorReturn { Result.failure(it) }
-}
 
 fun <T : Any> Single<T>.mapToResult(): Single<Result<T>> {
     return map { Result.success(it) }
@@ -40,14 +36,38 @@ fun <T : Any> Single<Result<T>>.flatMapResult(): Single<T> = flatMap { result ->
     })
 }
 
-inline fun <T : Any> singleTry(block: () -> T?): Single<T> = try {
-    Single.just(block()!!)
-} catch (e: Throwable) {
-    Single.error(e)
+inline fun <T : Any> singleCreate(crossinline source: () -> T?): Single<T> = Single.create { emitter ->
+    try {
+        val value: T = source()!!
+        emitter.onSuccess(value)
+    } catch (e: Throwable) {
+        emitter.onError(e)
+    }
 }
 
-inline fun <T : Any> observableTry(block: () -> T?): Observable<T> = try {
-    Observable.just(block()!!)
-} catch (e: Throwable) {
-    Observable.error(e)
+fun <T : Any> (() -> T?).toSingle(): Single<T> = singleCreate(this)
+
+fun <T : Any> Observable<T>.mapToResult(): Observable<Result<T>> {
+    return map { Result.success(it) }
+            .onErrorReturn { Result.failure(it) }
 }
+
+fun <T : Any> Observable<Result<T>>.flatMapResult(): Observable<T> = flatMap { result ->
+    result.fold(success = {
+        Observable.just(it)
+    }, failure = {
+        Observable.error(it)
+    })
+}
+
+inline fun <T : Any> observableCreate(crossinline source: () -> T?): Observable<T> = Observable.create { emitter ->
+    try {
+        val value: T = source()!!
+        emitter.onNext(value)
+        emitter.onComplete()
+    } catch (e: Throwable) {
+        emitter.onError(e)
+    }
+}
+
+fun <T : Any> (() -> T?).toObservable(): Observable<T> = observableCreate(this)

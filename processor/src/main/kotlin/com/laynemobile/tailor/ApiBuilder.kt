@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package com.laynemobile.processor
+package com.laynemobile.tailor
 
-interface Processor<in T : Any?, out R : Any?> : (T) -> R {
-    @Throws(Exception::class)
-    override fun invoke(p1: T): R
+interface ApiBuilder<T : Any?, R : Any?> : Builder<Api<T, R>> {
+    fun source(init: Source<T, R>.() -> Unit): Unit
+    fun tailor(init: Tailor<T, R>.() -> Unit): Unit
 }

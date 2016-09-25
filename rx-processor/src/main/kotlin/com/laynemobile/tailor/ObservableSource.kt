@@ -14,24 +14,12 @@
  * limitations under the License.
  */
 
-package com.laynemobile.processor
+package com.laynemobile.tailor
 
-interface Builder<out T : Any?> {
-    fun build(): T
-}
+import io.reactivex.Observable
 
-interface ProcessorBuilder<T : Any, R : Any> {
-    fun build(init: Extender<T, R>.() -> Unit): Processor<T, R>
-}
-
-abstract class AbstractProcessorBuilder<T : Any, R : Any, out P : Processor<T, R>>
-protected constructor() : ProcessorBuilder<T, R> {
-
-    protected abstract fun build(extensions: Extensions<T, R>): P
-
-    final override fun build(init: Extender<T, R>.() -> Unit): P {
-        val extender = DefaultExtender<T, R>()
-        extender.init()
-        return build(extender.build())
+fun <T : Any, R : Any> Source<T, Observable<R>>.observableSource(func: (T) -> R?): Unit {
+    source { p1: T ->
+        observableCreate { func(p1) }
     }
 }

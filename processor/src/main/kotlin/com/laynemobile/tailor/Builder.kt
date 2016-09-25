@@ -14,14 +14,8 @@
  * limitations under the License.
  */
 
-package com.laynemobile.processor
+package com.laynemobile.tailor
 
-fun <T : Any?, R : Any?> ((T) -> R).toProcessor() = object : Processor<T, R> {
-    override fun invoke(p1: T): R = this@toProcessor(p1)
-}
-
-open class ForwardingProcessor<in T : Any?, out R : Any?>(
-        delegate: Processor<T, R>
-) : Processor<T, R> by delegate {
-    constructor(block: (T) -> R) : this(block.toProcessor())
+interface Builder<out T : Any?> {
+    fun build(): T
 }

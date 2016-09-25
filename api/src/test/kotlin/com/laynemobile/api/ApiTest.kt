@@ -21,7 +21,12 @@ import com.laynemobile.api.extensions.aggregate
 import com.laynemobile.api.extensions.requireNetwork
 import com.laynemobile.api.internal.ApiLog
 import com.laynemobile.api.internal.request.fold
+import com.laynemobile.tailor.Api
+import com.laynemobile.tailor.buildApi
+import com.laynemobile.tailor.modify
+import com.laynemobile.tailor.observableSource
 import io.reactivex.Notification
+import io.reactivex.Observable
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
 import org.junit.Before
@@ -45,7 +50,7 @@ class ApiTest {
 
         fun execute(param: Int): String = _execute(param, true)
 
-        val api = api(::execute) {
+        val api = buildApi<Int, Observable<String>>({ observableSource(::execute) }) {
             requireNetwork {
                 ApiLog.d(TAG, "checking network")
                 true
@@ -63,7 +68,7 @@ class ApiTest {
         val param: Int = 5
         var result: String? = null
         var error: Throwable? = null
-        api.invoke(param)
+        api.request(param)
                 .materialize()
                 .doOnNext { n: Notification<String> ->
                     n.fold(onNext = {
@@ -82,7 +87,8 @@ class ApiTest {
         fun isNetworkAvailable(p1: Int): Boolean = (p1 % 2) == 0
         fun mapper(p1: String): String = p1 + 3
 
-        val api = api({ p: Int -> p.toString() }) {
+        val api: Api<Int, Observable<String>>
+                = buildApi({ observableSource(Int::toString) }) {
             requireNetwork(::isNetworkAvailable)
             aggregate()
         }
