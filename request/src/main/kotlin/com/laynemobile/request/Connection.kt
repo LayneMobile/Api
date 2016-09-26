@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api
+package com.laynemobile.request
 
 import io.reactivex.disposables.Disposable
 import io.reactivex.disposables.Disposables

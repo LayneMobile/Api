@@ -22,7 +22,7 @@ package com.laynemobile.result
 import java.io.IOException
 
 
-internal interface OutcomeLike<out T : Any, out E : Throwable> {
+internal interface ConclusionLike<out T : Any, out E : Throwable> {
     operator fun component1(): T?
     operator fun component2(): E?
 
@@ -41,7 +41,7 @@ open class Conclusion<out T : Any, out E : Throwable>
 private constructor(
         delegate: Either<T, E>,
         private val success: Boolean = delegate is Either.Left
-) : OneOf<T, E>(delegate), OutcomeLike<T, E> {
+) : OneOf<T, E>(delegate), ConclusionLike<T, E> {
 
     protected constructor(value: T) : this(Either.left(value))
     protected constructor(error: E) : this(Either.right(error))

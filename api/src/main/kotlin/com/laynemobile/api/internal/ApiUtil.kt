@@ -18,8 +18,7 @@ package com.laynemobile.api.internal
 
 import com.laynemobile.api.Alteration
 import com.laynemobile.api.Api
-import com.laynemobile.api.Request
-import com.laynemobile.api.api
+import com.laynemobile.request.Request
 
 internal class TailorFunction<T : Any, R : Any>
 private constructor(
@@ -33,7 +32,7 @@ private constructor(
             alterations.interceptors()
     )
 
-    override fun invoke(source: (T) -> Request<R>) = api { p1: T ->
+    override fun invoke(source: (T) -> Request<R>) = Api.create { p1: T ->
         Request.defer { request(source, p1) }
     }
 
@@ -68,12 +67,9 @@ internal constructor(
     )
 
     override fun proceed(t: T): Request<R> {
-        val interceptor = interceptors.getOrNull(index)
-        return if (interceptor != null) {
-            interceptor.invoke(next(t))
-        } else {
-            request(t)
-        }
+        val intercept = interceptors.getOrNull(index)
+                ?: return request(t)
+        return intercept(next(t))
     }
 
     private fun request(t: T): Request<R> {

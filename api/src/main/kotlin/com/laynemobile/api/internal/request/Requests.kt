@@ -17,8 +17,8 @@
 package com.laynemobile.api.internal.request
 
 import com.laynemobile.api.Alteration
-import com.laynemobile.api.Request
 import com.laynemobile.api.extensions.Aggregable
+import com.laynemobile.request.Request
 import java.util.*
 
 private fun <T : Any> Aggregate<T>.validOrNull(): Aggregate<T>? = let { a ->
@@ -46,15 +46,10 @@ internal constructor(
 
     override fun invoke(chain: Alteration.Interceptor.Chain<T, R>): Request<R> {
         val p = chain.value
-        val aggregable = source.invoke(p)
-        val key = aggregable?.key
-        if (aggregable == null || key == null) {
-            return chain.proceed(p)
-        }
-
-        return getOrCreate(key = key, request = {
+        val aggregable = source.invoke(p) ?: return chain.proceed(p)
+        return getOrCreate(key = aggregable.key, request = {
             chain.proceed(p)
-        }, create = { request ->
+        }, aggregate = { request ->
             Aggregate(aggregable, request, onAggregateComplete)
         }).request
     }
@@ -74,11 +69,11 @@ internal constructor(
     private inline fun getOrCreate(
             key: Any,
             request: () -> Request<R>,
-            create: (Request<R>) -> Aggregate<R>
+            aggregate: (Request<R>) -> Aggregate<R>
     ): Aggregate<R> {
         return get(key).ifNotValid {
             val r = request()
-            getOrCreate(key) { create(r) }
+            getOrCreate(key) { aggregate(r) }
         }
     }
 

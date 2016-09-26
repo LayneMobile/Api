@@ -16,6 +16,7 @@
 
 include 'util',
         'result',
+        'request',
         'api',
         'retrofit-api'
 

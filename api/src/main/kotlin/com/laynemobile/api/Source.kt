@@ -18,6 +18,8 @@
 
 package com.laynemobile.api
 
+import com.laynemobile.request.Request
+import com.laynemobile.request.toRequest
 import io.reactivex.Flowable
 import io.reactivex.Observable
 import io.reactivex.Single
@@ -41,8 +43,8 @@ interface Source<out T : Any, R : Any> {
     companion object {
         fun <T : Any, R : Any> builder(): Builder<T, R> = Builder<T, R>()
 
-        fun <T : Any, R : Any> build(init: Source<T, R>.() -> Unit): (T) -> Request<R> {
-            val builder = Source.Builder<T, R>()
+        inline fun <T : Any, R : Any> build(init: Source<T, R>.() -> Unit): (T) -> Request<R> {
+            val builder = builder<T, R>()
             builder.init()
             return builder.build()
         }
@@ -52,25 +54,41 @@ interface Source<out T : Any, R : Any> {
 
 fun <T : Any, R : Any> Source<T, R>.singleSource(source: (T) -> Single<R>): Unit {
     source { p1: T ->
-        Request.from(source(p1))
+        try {
+            source(p1).toRequest()
+        } catch (e: Throwable) {
+            e.toRequest<R>()
+        }
     }
 }
 
 fun <T : Any, R : Any> Source<T, R>.observableSource(source: (T) -> Observable<R>): Unit {
     source { p1: T ->
-        Request.from(source(p1))
+        try {
+            source(p1).toRequest()
+        } catch (e: Throwable) {
+            e.toRequest<R>()
+        }
     }
 }
 
 fun <T : Any, R : Any> Source<T, R>.flowableSource(source: (T) -> Flowable<R>): Unit {
     source { p1: T ->
-        Request.from(source(p1))
+        try {
+            source(p1).toRequest()
+        } catch (e: Throwable) {
+            e.toRequest<R>()
+        }
     }
 }
 
-fun <T : Any, R : Any> Source<T, R>.callableSource(source: (T) -> R): Unit {
+fun <T : Any, R : Any> Source<T, R>.callableSource(source: (T) -> R?): Unit {
     source { p1: T ->
-        Request.just(source(p1))
+        try {
+            source(p1)!!.toRequest()
+        } catch (e: Throwable) {
+            e.toRequest<R>()
+        }
     }
 }
 

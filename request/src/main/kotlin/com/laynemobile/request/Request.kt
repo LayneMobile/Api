@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api
+package com.laynemobile.request
 
 import io.reactivex.*
 import org.reactivestreams.Publisher
@@ -109,6 +109,27 @@ sealed class Request<T : Any> {
         is AsDeferred -> Completable.defer { supplier().toCompletable() }
     }
 
+    fun subscribe(receiver: MultiReceiver<T>): Unit = when (this) {
+        is AsSingle -> delegate.subscribe(receiver.toSingleObserver())
+        is AsObservable -> delegate.subscribe(receiver.toObserver())
+        is AsFlowable -> delegate.subscribe(receiver.toSubscriber())
+        is AsDeferred -> supplier().subscribe(receiver)
+    }
+
+    fun observeOn(scheduler: Scheduler): Request<T> = when (this) {
+        is AsSingle -> AsSingle(delegate.observeOn(scheduler))
+        is AsObservable -> AsObservable(delegate.observeOn(scheduler))
+        is AsFlowable -> AsFlowable(delegate.observeOn(scheduler))
+        is AsDeferred -> defer { supplier().observeOn(scheduler) }
+    }
+
+    fun subscribeOn(scheduler: Scheduler): Request<T> = when (this) {
+        is AsSingle -> AsSingle(delegate.subscribeOn(scheduler))
+        is AsObservable -> AsObservable(delegate.subscribeOn(scheduler))
+        is AsFlowable -> AsFlowable(delegate.subscribeOn(scheduler))
+        is AsDeferred -> defer { supplier().subscribeOn(scheduler) }
+    }
+
     class AsSingle<T : Any>
     internal constructor(
             override val delegate: Single<T>
@@ -141,23 +162,11 @@ sealed class Request<T : Any> {
             internal val supplier: () -> Request<T>
     ) : Request<T>(), DeferredRequest<T> {
 
-        override fun subscribe(receiver: MultiReceiver<T>) {
-            val request = supplier()
-            request.fold(single = {
-                it.subscribe(receiver.toSingleObserver())
-            }, observable = {
-                it.subscribe(receiver.toObserver())
-            }, flowable = {
-                it.subscribe(receiver.toSubscriber())
-            }, deferred = {
-                it.subscribe(receiver)
-            })
-        }
     }
 
     companion object {
         fun <T : Any> just(item: T): Request<T> {
-            return AsSingle(Single.just(item))
+            return AsSingle(item.toSingle())
         }
 
         fun <T : Any> from(single: Single<T>): Request<T> {
@@ -165,7 +174,7 @@ sealed class Request<T : Any> {
         }
 
         fun <T : Any> create(source: SingleOnSubscribe<T>): Request<T> {
-            return from(Single.create(source))
+            return from(source.toSingle())
         }
 
         fun <T : Any> from(observable: Observable<T>): Request<T> {
@@ -173,7 +182,7 @@ sealed class Request<T : Any> {
         }
 
         fun <T : Any> create(source: ObservableOnSubscribe<T>): Request<T> {
-            return AsObservable(Observable.create(source))
+            return AsObservable(source.toObservable())
         }
 
         fun <T : Any> from(flowable: Flowable<T>): Request<T> {
@@ -184,7 +193,7 @@ sealed class Request<T : Any> {
                 source: FlowableOnSubscribe<T>,
                 mode: FlowableEmitter.BackpressureMode = FlowableEmitter.BackpressureMode.BUFFER
         ): Request<T> {
-            return AsFlowable(Flowable.create(source, mode))
+            return AsFlowable(source.toFlowable(mode))
         }
 
         fun <T : Any> error(exception: Throwable): Request<T> {
@@ -197,3 +206,34 @@ sealed class Request<T : Any> {
     }
 }
 
+fun <T : Any> T.toSingle(): Single<T> = Single.just(this)
+fun <T : Any> T.toRequest(): Request<T> = Request.from(toSingle())
+
+
+fun <T : Any> Throwable.toSingle(): Single<T> = Single.error(this)
+fun <T : Any> Throwable.toRequest(): Request<T> = Request.from(toSingle())
+
+
+fun <T : Any> Single<T>.toRequest(): Request<T> = Request.from(this)
+fun <T : Any> SingleOnSubscribe<T>.toSingle(): Single<T> = Single.create(this)
+fun <T : Any> SingleOnSubscribe<T>.toRequest(): Request<T> = Request.from(toSingle())
+
+
+fun <T : Any> Observable<T>.toRequest(): Request<T> = Request.from(this)
+fun <T : Any> ObservableOnSubscribe<T>.toObservable(): Observable<T> = Observable.create(this)
+fun <T : Any> ObservableOnSubscribe<T>.toRequest(): Request<T> = Request.from(toObservable())
+
+
+fun <T : Any> Flowable<T>.toRequest(): Request<T> = Request.from(this)
+
+fun <T : Any> FlowableOnSubscribe<T>.toFlowable(
+        mode: FlowableEmitter.BackpressureMode = FlowableEmitter.BackpressureMode.BUFFER
+): Flowable<T> {
+    return Flowable.create(this, mode)
+}
+
+fun <T : Any> FlowableOnSubscribe<T>.toRequest(
+        mode: FlowableEmitter.BackpressureMode = FlowableEmitter.BackpressureMode.BUFFER
+): Request<T> {
+    return Request.from(toFlowable(mode))
+}

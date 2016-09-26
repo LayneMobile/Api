@@ -16,6 +16,8 @@
 
 package com.laynemobile.api
 
+import com.laynemobile.request.Request
+
 interface ApiBuilder<T : Any, R : Any> :
         Source<T, R>,
         Tailor<T, R>,

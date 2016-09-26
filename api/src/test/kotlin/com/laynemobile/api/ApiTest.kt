@@ -45,7 +45,6 @@ class ApiTest {
 
         fun execute(param: Int): String = _execute(param, true)
 
-
         val api = Api.build<Int, String> {
             callableSource(::execute)
             requireNetwork {

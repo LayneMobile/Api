@@ -19,33 +19,40 @@
 package com.laynemobile.api
 
 import com.laynemobile.api.internal.TailorFunction
+import com.laynemobile.request.Request
 import java.util.*
 
 interface Tailor<out T : Any, in R : Any> {
     fun alter(alteration: Alteration<T, R>)
 
     class Builder<T : Any, R : Any>
-    internal constructor()
-    : Tailor<T, R>, com.laynemobile.api.Builder<((T) -> Request<R>) -> Api<T, R>> {
-        private val value: MutableSet<Alteration<T, R>> = HashSet()
+    internal constructor() :
+            Tailor<T, R>,
+            com.laynemobile.api.Builder<((T) -> Request<R>) -> Api<T, R>> {
+        private val alterations: MutableSet<Alteration<T, R>> = HashSet()
 
         override fun alter(alteration: Alteration<T, R>) {
-            value += alteration
+            alterations += alteration
         }
 
         override fun build(): ((T) -> Request<R>) -> Api<T, R> {
-            return TailorFunction(value)
+            val _alterations = alterations
+            return if (_alterations.isEmpty()) {
+                { source -> Api.create(source) }
+            } else {
+                TailorFunction(_alterations)
+            }
         }
     }
 
     companion object {
-        fun <T : Any, R : Any> build(init: Tailor<T, R>.() -> Unit): ((T) -> Request<R>) -> Api<T, R> {
-            val builder = Tailor.Builder<T, R>()
+        fun <T : Any, R : Any> builder(): Tailor.Builder<T, R> = Tailor.Builder<T, R>()
+
+        inline fun <T : Any, R : Any> build(init: Tailor<T, R>.() -> Unit): ((T) -> Request<R>) -> Api<T, R> {
+            val builder = builder<T, R>()
             builder.init()
             return builder.build()
         }
-
-        fun <T : Any, R : Any> builder(): Tailor.Builder<T, R> = Tailor.Builder<T, R>()
     }
 }
 

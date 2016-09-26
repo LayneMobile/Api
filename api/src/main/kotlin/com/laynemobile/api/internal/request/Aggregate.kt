@@ -16,10 +16,10 @@
 
 package com.laynemobile.api.internal.request
 
-import com.laynemobile.api.Request
 import com.laynemobile.api.exceptions.SourceCancelledException
 import com.laynemobile.api.extensions.Aggregable
 import com.laynemobile.api.internal.ApiLog
+import com.laynemobile.request.Request
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Notification

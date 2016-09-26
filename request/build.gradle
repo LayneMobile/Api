@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package com.laynemobile.api.internal
+apply from: "${rootDir}/gradle/kotlin-library.gradle"
 
-internal inline fun <T : Any?, R : Any?> T.to(block: (T) -> R): R {
-    return block(this)
+dependencies {
+    compile project(':result')
+    compile "io.reactivex.rxjava2:rxjava:2.0.0-RC2"
 }

@@ -16,7 +16,8 @@
 
 package com.laynemobile.api
 
-import com.laynemobile.api.internal.to
+import com.laynemobile.request.Request
+import com.laynemobile.request.toRequest
 
 interface Api<in T : Any, R : Any> {
     fun request(p1: T): Request<R>
@@ -37,26 +38,32 @@ interface Api<in T : Any, R : Any> {
         override fun build(): Api<T, R> {
             val source = sourceBuilder.build()
             val tailor = tailorBuilder.build()
-            return source.to(tailor)
+            return tailor(source)
         }
     }
 
     companion object {
-        fun <T : Any, R : Any> build(init: ApiBuilder<T, R>.() -> Unit): Api<T, R> {
-            val builder = Api.Builder<T, R>()
+        inline fun <T : Any, R : Any> create(crossinline source: (T) -> Request<R>) = object : Api<T, R> {
+            override fun request(p1: T): Request<R> = try {
+                source(p1)
+            } catch (e: Throwable) {
+                e.toRequest<R>()
+            }
+        }
+
+        fun <T : Any, R : Any> builder(): Builder<T, R> = Builder()
+
+        inline fun <T : Any, R : Any> build(init: ApiBuilder<T, R>.() -> Unit): Api<T, R> {
+            val builder = builder<T, R>()
             builder.init()
             return builder.build()
         }
 
-        fun <T : Any, R : Any> build(source: Source<T, R>.() -> Unit, tailor: Tailor<T, R>.() -> Unit): Api<T, R> {
-            val _source = Source.build(source)
-            val _tailor = Tailor.build(tailor)
-            return _source.to(_tailor)
+        inline fun <T : Any, R : Any> build(source: Source<T, R>.() -> Unit, tailor: Tailor<T, R>.() -> Unit): Api<T, R> {
+            val builder = builder<T, R>()
+            builder.source()
+            builder.tailor()
+            return builder.build()
         }
     }
-}
-
-
-inline fun <T : Any, R : Any> api(crossinline block: (T) -> Request<R>) = object : Api<T, R> {
-    override fun request(p1: T): Request<R> = block(p1)
 }

@@ -16,6 +16,8 @@
 
 package com.laynemobile.api
 
+import com.laynemobile.request.Request
+
 sealed class Alteration<in T : Any, out R : Any> {
 
     abstract class Validator<in T : Any> :
