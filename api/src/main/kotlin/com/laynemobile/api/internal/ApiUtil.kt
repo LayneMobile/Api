@@ -18,48 +18,36 @@ package com.laynemobile.api.internal
 
 import com.laynemobile.api.Alteration
 import com.laynemobile.api.Api
-import com.laynemobile.api.Tailor
+import com.laynemobile.api.Request
 import com.laynemobile.api.api
-import java.util.*
 
-internal fun <T : Any?, R : Any?> buildTailor(init: Tailor<T, R>.() -> Unit): ((T) -> R) -> Api<T, R> {
-    val tailor = DefaultTailor<T, R>()
-    tailor.init()
-    return TailorFunction(tailor.get())
-}
-
-private class DefaultTailor<T : Any?, R : Any?>
-internal constructor() : Tailor<T, R> {
-    internal val value: MutableSet<Alteration<T, R>> = HashSet()
-
-    override fun alter(alteration: Alteration<T, R>) {
-        value += alteration
-    }
-
-    fun get(): Collection<Alteration<T, R>> = value
-}
-
-private class TailorFunction<T : Any?, R : Any?>
+internal class TailorFunction<T : Any, R : Any>
 private constructor(
         private val validators: List<Alteration.Validator<T>>,
         private val modifiers: List<Alteration.Modifier<T, R>>,
         private val interceptors: List<Alteration.Interceptor<T, R>>
-) : ((T) -> R) -> Api<T, R> {
+) : ((T) -> Request<R>) -> Api<T, R> {
     internal constructor(alterations: Collection<Alteration<T, R>>) : this(
             alterations.validators(),
             alterations.modifiers(),
             alterations.interceptors()
     )
 
-    override fun invoke(source: (T) -> R) = api { p1: T ->
+    override fun invoke(source: (T) -> Request<R>) = api { p1: T ->
+        Request.defer { request(source, p1) }
+    }
+
+    private fun request(source: (T) -> Request<R>, p1: T): Request<R> = try {
         AlterationChain(source, validators, modifiers, interceptors)
                 .proceed(p1)
+    } catch (e: Throwable) {
+        Request.error<R>(e)
     }
 }
 
-private class AlterationChain<T : Any?, R : Any?>
+private class AlterationChain<T : Any, R : Any>
 internal constructor(
-        private val source: (T) -> R,
+        private val source: (T) -> Request<R>,
         private val validators: List<Alteration.Validator<T>>,
         private val modifiers: List<Alteration.Modifier<T, R>>,
         private val interceptors: List<Alteration.Interceptor<T, R>>,
@@ -79,7 +67,7 @@ internal constructor(
             _value = t
     )
 
-    override fun proceed(t: T): R {
+    override fun proceed(t: T): Request<R> {
         val interceptor = interceptors.getOrNull(index)
         return if (interceptor != null) {
             interceptor.invoke(next(t))
@@ -88,19 +76,18 @@ internal constructor(
         }
     }
 
-    private fun request(t: T): R {
-        val source = this.source
+    private fun request(t: T): Request<R> {
         // Validate with checkers
-        for (validator in validators) {
-            validator.invoke(t)
+        for (validate in validators) {
+            validate(t)
         }
 
         // Make actual call
-        var result = source.invoke(t)
+        var result = source(t)
 
         // Allow modifications to original result
-        for (modifier in modifiers) {
-            result = modifier.invoke(t, result)
+        for (modify in modifiers) {
+            result = modify(t, result)
         }
 
         // return potentially modified  result

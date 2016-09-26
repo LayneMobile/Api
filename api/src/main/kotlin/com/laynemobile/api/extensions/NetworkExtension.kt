@@ -18,11 +18,11 @@
 
 package com.laynemobile.api.extensions;
 
-import com.laynemobile.api.exceptions.NetworkUnavailableException
-import com.laynemobile.api.internal.ApiLog
 import com.laynemobile.api.Alteration
 import com.laynemobile.api.Tailor
 import com.laynemobile.api.alter
+import com.laynemobile.api.exceptions.NetworkUnavailableException
+import com.laynemobile.api.internal.ApiLog
 
 private class NetworkValidator<in T : Any>
 internal constructor(

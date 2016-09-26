@@ -16,34 +16,47 @@
 
 package com.laynemobile.api
 
-import com.laynemobile.api.internal.DefaultApiBuilder
+import com.laynemobile.api.internal.to
 
-interface Api<in T : Any?, out R : Any?> {
-    fun request(p1: T): R
-}
+interface Api<in T : Any, R : Any> {
+    fun request(p1: T): Request<R>
 
-fun <T : Any?, R : Any?> buildApi(init: ApiBuilder<T, R>.() -> Unit): Api<T, R> {
-    val apiBuilder = DefaultApiBuilder<T, R>()
-    apiBuilder.init()
-    return apiBuilder.build()
-}
+    class Builder<T : Any, R : Any>
+    internal constructor() : ApiBuilder<T, R> {
+        private val sourceBuilder: Source.Builder<T, R> = Source.builder()
+        private val tailorBuilder: Tailor.Builder<T, R> = Tailor.builder()
 
-fun <T : Any?, R : Any?> buildApi(source: Source<T, R>.() -> Unit, tailor: Tailor<T, R>.() -> Unit): Api<T, R> {
-    return buildApi {
-        source(source)
-        tailor(tailor)
+        override fun source(source: (T) -> Request<R>) {
+            sourceBuilder.source(source)
+        }
+
+        override fun alter(alteration: Alteration<T, R>) {
+            tailorBuilder.alter(alteration)
+        }
+
+        override fun build(): Api<T, R> {
+            val source = sourceBuilder.build()
+            val tailor = tailorBuilder.build()
+            return source.to(tailor)
+        }
+    }
+
+    companion object {
+        fun <T : Any, R : Any> build(init: ApiBuilder<T, R>.() -> Unit): Api<T, R> {
+            val builder = Api.Builder<T, R>()
+            builder.init()
+            return builder.build()
+        }
+
+        fun <T : Any, R : Any> build(source: Source<T, R>.() -> Unit, tailor: Tailor<T, R>.() -> Unit): Api<T, R> {
+            val _source = Source.build(source)
+            val _tailor = Tailor.build(tailor)
+            return _source.to(_tailor)
+        }
     }
 }
 
-inline fun <T : Any?, R : Any?> api(crossinline block: (T) -> R) = object : Api<T, R> {
-    override fun request(p1: T): R = block(p1)
+
+inline fun <T : Any, R : Any> api(crossinline block: (T) -> Request<R>) = object : Api<T, R> {
+    override fun request(p1: T): Request<R> = block(p1)
 }
-
-inline fun <T : Any?, R1 : Any?, R2 : Any?> Api<T, R1>.andThen(
-        crossinline after: (R1) -> R2
-): Api<T, R2> = api { p1 -> after(request(p1)) }
-
-inline fun <T1 : Any?, T2 : Any, R : Any?> Api<T1, R>.compose(
-        crossinline before: (T2) -> T1
-): Api<T2, R> = api { p1 -> request(before(p1)) }
-

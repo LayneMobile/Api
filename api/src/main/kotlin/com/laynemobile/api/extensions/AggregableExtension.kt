@@ -18,10 +18,9 @@
 
 package com.laynemobile.api.extensions;
 
-import com.laynemobile.api.internal.request.AggregableProcessor
 import com.laynemobile.api.Tailor
 import com.laynemobile.api.alter
-import io.reactivex.Observable
+import com.laynemobile.api.internal.request.AggregableProcessor
 
 interface Aggregable {
     val key: Any
@@ -36,10 +35,10 @@ data class SimpleAggregable
         override val keepAliveOnError: Boolean = false
 ) : Aggregable
 
-fun <T : Any?, R : Any> Tailor<T, Observable<R>>.aggregate(block: (T) -> Aggregable) {
-    alter { AggregableProcessor<T, R>(block) }
+fun <T : Any, R : Any> Tailor<T, R>.aggregate(function: (T) -> Aggregable) {
+    alter { AggregableProcessor(function) }
 }
 
-fun <T : Any, R : Any> Tailor<T, Observable<R>>.aggregate() {
+fun <T : Any, R : Any> Tailor<T, R>.aggregate() {
     aggregate { SimpleAggregable(it) }
 }

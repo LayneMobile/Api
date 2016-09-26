@@ -16,13 +16,13 @@
 
 package com.laynemobile.api.internal.request
 
+import com.laynemobile.api.Request
 import com.laynemobile.api.exceptions.SourceCancelledException
 import com.laynemobile.api.extensions.Aggregable
 import com.laynemobile.api.internal.ApiLog
 import io.reactivex.BackpressureStrategy
 import io.reactivex.Flowable
 import io.reactivex.Notification
-import io.reactivex.Observable
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.disposables.Disposables
@@ -39,14 +39,16 @@ fun <T : Any> Flowable<T>.nest(): Flowable<Flowable<T>> = Flowable.just(this)
 internal class Aggregate<T : Any>
 internal constructor(
         private val aggregable: Aggregable,
-        source: Flowable<T>,
+        source: Request<T>,
         onComplete: (Aggregable) -> Unit = {}
 ) : Disposable {
 
-    val request: Flowable<T>
+    val request: Request<T>
 
     private val publisher: PublishProcessor<T> = PublishProcessor.create<T>()
-    private val source: Flowable<T> = source.subscribeOn(Schedulers.io())
+    private val source: Flowable<T> = source
+            .toFlowable(BackpressureStrategy.BUFFER)
+            .subscribeOn(Schedulers.io())
     private val latest: AtomicReference<NotificationNode<T>> = AtomicReference(NotificationNode<T>())
     private val disposable: CompositeDisposable = CompositeDisposable()
 
@@ -56,20 +58,11 @@ internal constructor(
     private val complete = completeFunction(onComplete)
     private val onSubscribe = onSubscribeFunction()
 
-    internal constructor(
-            aggregable: Aggregable,
-            source: Observable<T>,
-            onComplete: (Aggregable) -> Unit
-    ) : this(
-            aggregable = aggregable,
-            source = source.toFlowable(BackpressureStrategy.BUFFER),
-            onComplete = onComplete
-    )
-
     init {
-        request = publisher.doOnSubscribe(onSubscribe)
+        val flowable = publisher.doOnSubscribe(onSubscribe)
                 .nest()
                 .lift(ReplayLatestOperator(AtomicLatest(latest)))
+        request = Request.from(flowable)
         disposable.add(Disposables.fromAction {
             complete()
         })

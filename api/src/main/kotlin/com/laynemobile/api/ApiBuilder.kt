@@ -16,7 +16,13 @@
 
 package com.laynemobile.api
 
-interface ApiBuilder<T : Any?, R : Any?> : Builder<Api<T, R>> {
-    fun source(init: Source<T, R>.() -> Unit): Unit
-    fun tailor(init: Tailor<T, R>.() -> Unit): Unit
+interface ApiBuilder<T : Any, R : Any> :
+        Source<T, R>,
+        Tailor<T, R>,
+        Builder<Api<T, R>> {
+    override fun source(source: (T) -> Request<R>)
+
+    override fun alter(alteration: Alteration<T, R>)
+
+    override fun build(): Api<T, R>
 }

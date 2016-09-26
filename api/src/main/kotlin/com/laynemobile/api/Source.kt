@@ -18,14 +18,62 @@
 
 package com.laynemobile.api
 
-interface Source<out T : Any?, in R : Any?> {
-    fun source(source: (T) -> R): Unit
+import io.reactivex.Flowable
+import io.reactivex.Observable
+import io.reactivex.Single
+
+interface Source<out T : Any, R : Any> {
+    fun source(source: (T) -> Request<R>): Unit
+
+    class Builder<T : Any, R : Any>
+    internal constructor() : Source<T, R>, com.laynemobile.api.Builder<(T) -> Request<R>> {
+        private var _source: ((T) -> Request<R>)? = null
+
+        override fun source(source: (T) -> Request<R>) {
+            _source = source
+        }
+
+        override fun build(): (T) -> Request<R> {
+            return _source!!
+        }
+    }
+
+    companion object {
+        fun <T : Any, R : Any> builder(): Builder<T, R> = Builder<T, R>()
+
+        fun <T : Any, R : Any> build(init: Source<T, R>.() -> Unit): (T) -> Request<R> {
+            val builder = Source.Builder<T, R>()
+            builder.init()
+            return builder.build()
+        }
+    }
 }
 
-inline fun <T : Any?, R : Any?> Source<T, R>.source(block: () -> ((T) -> R)): Unit {
-    source(block())
+
+fun <T : Any, R : Any> Source<T, R>.singleSource(source: (T) -> Single<R>): Unit {
+    source { p1: T ->
+        Request.from(source(p1))
+    }
 }
 
-fun <R : Any?> Source<*, R>.source(value: R): Unit {
-    source { value }
+fun <T : Any, R : Any> Source<T, R>.observableSource(source: (T) -> Observable<R>): Unit {
+    source { p1: T ->
+        Request.from(source(p1))
+    }
+}
+
+fun <T : Any, R : Any> Source<T, R>.flowableSource(source: (T) -> Flowable<R>): Unit {
+    source { p1: T ->
+        Request.from(source(p1))
+    }
+}
+
+fun <T : Any, R : Any> Source<T, R>.callableSource(source: (T) -> R): Unit {
+    source { p1: T ->
+        Request.just(source(p1))
+    }
+}
+
+inline fun <T : Any, R : Any> Source<T, R>.callableSource(block: () -> ((T) -> R)): Unit {
+    callableSource(block())
 }

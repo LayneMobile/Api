@@ -21,12 +21,7 @@ import com.laynemobile.api.extensions.aggregate
 import com.laynemobile.api.extensions.requireNetwork
 import com.laynemobile.api.internal.ApiLog
 import com.laynemobile.api.internal.request.fold
-import com.laynemobile.api.Api
-import com.laynemobile.api.buildApi
-import com.laynemobile.api.modify
-import com.laynemobile.api.observableSource
 import io.reactivex.Notification
-import io.reactivex.Observable
 import org.junit.Assert.assertEquals
 import org.junit.Assert.fail
 import org.junit.Before
@@ -50,7 +45,9 @@ class ApiTest {
 
         fun execute(param: Int): String = _execute(param, true)
 
-        val api = buildApi<Int, Observable<String>>({ observableSource(::execute) }) {
+
+        val api = Api.build<Int, String> {
+            callableSource(::execute)
             requireNetwork {
                 ApiLog.d(TAG, "checking network")
                 true
@@ -59,9 +56,9 @@ class ApiTest {
                 ApiLog.d(TAG, "aggregating")
                 SimpleAggregable(key = p)
             }
-            modify { params, observable ->
+            modify { params, request ->
                 ApiLog.d(TAG, "modifying")
-                observable
+                request
             }
         }
 
@@ -69,6 +66,7 @@ class ApiTest {
         var result: String? = null
         var error: Throwable? = null
         api.request(param)
+                .toObservable()
                 .materialize()
                 .doOnNext { n: Notification<String> ->
                     n.fold(onNext = {
@@ -87,8 +85,8 @@ class ApiTest {
         fun isNetworkAvailable(p1: Int): Boolean = (p1 % 2) == 0
         fun mapper(p1: String): String = p1 + 3
 
-        val api: Api<Int, Observable<String>>
-                = buildApi({ observableSource(Int::toString) }) {
+        val api: Api<Int, String> = Api.build {
+            callableSource(Int::toString)
             requireNetwork(::isNetworkAvailable)
             aggregate()
         }
@@ -98,6 +96,7 @@ class ApiTest {
         var onError: Throwable? = null
         api.request(p1)
                 .map(::mapper)
+                .toObservable()
                 .materialize()
                 .doOnNext { n: Notification<String> ->
                     n.fold(onNext = {

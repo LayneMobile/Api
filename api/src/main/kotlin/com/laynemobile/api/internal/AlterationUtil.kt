@@ -19,7 +19,7 @@ package com.laynemobile.api.internal
 import com.laynemobile.api.Alteration
 import java.util.*
 
-internal fun <T : Any?> Collection<Alteration<T, *>>.validators(): List<Alteration.Validator<T>> {
+internal fun <T : Any> Collection<Alteration<T, *>>.validators(): List<Alteration.Validator<T>> {
     val validators = ArrayList<Alteration.Validator<T>>(size)
     forEach {
         when (it) {
@@ -29,7 +29,7 @@ internal fun <T : Any?> Collection<Alteration<T, *>>.validators(): List<Alterati
     return validators
 }
 
-internal fun <T : Any?, R : Any?> Collection<Alteration<T, R>>.modifiers(): List<Alteration.Modifier<T, R>> {
+internal fun <T : Any, R : Any> Collection<Alteration<T, R>>.modifiers(): List<Alteration.Modifier<T, R>> {
     val modifiers = ArrayList<Alteration.Modifier<T, R>>(size)
     forEach {
         when (it) {
@@ -39,7 +39,7 @@ internal fun <T : Any?, R : Any?> Collection<Alteration<T, R>>.modifiers(): List
     return modifiers
 }
 
-internal fun <T : Any?, R : Any?> Collection<Alteration<T, R>>.interceptors(): List<Alteration.Interceptor<T, R>> {
+internal fun <T : Any, R : Any> Collection<Alteration<T, R>>.interceptors(): List<Alteration.Interceptor<T, R>> {
     val interceptors = ArrayList<Alteration.Interceptor<T, R>>(size)
     forEach {
         when (it) {

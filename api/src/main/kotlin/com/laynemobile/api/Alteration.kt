@@ -16,30 +16,30 @@
 
 package com.laynemobile.api
 
-sealed class Alteration<in T : Any?, out R : Any?> {
+sealed class Alteration<in T : Any, out R : Any> {
 
-    abstract class Validator<in T : Any?> :
+    abstract class Validator<in T : Any> :
             Alteration<T, Nothing>(),
             (T) -> Unit {
 
         @Throws(Exception::class)
         abstract override fun invoke(param: T)
 
-        fun <R : Any?> generify(): Alteration<T, R> = this
+        fun <R : Any> generify(): Alteration<T, R> = this
     }
 
-    abstract class Modifier<in T : Any?, R : Any?> :
+    abstract class Modifier<in T : Any, R : Any> :
             Alteration<T, R>(),
-            (T, R) -> R
+            (T, Request<R>) -> Request<R>
 
-    abstract class Interceptor<T : Any?, R : Any?> :
+    abstract class Interceptor<T : Any, R : Any> :
             Alteration<T, R>(),
-            (Interceptor.Chain<T, R>) -> R {
+            (Interceptor.Chain<T, R>) -> Request<R> {
 
-        interface Chain<T : Any?, out R : Any?> {
+        interface Chain<T : Any, R : Any> {
             val value: T
 
-            fun proceed(t: T): R
+            fun proceed(t: T): Request<R>
         }
     }
 }
