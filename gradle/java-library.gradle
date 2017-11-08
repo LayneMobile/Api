@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-apply plugin: 'java'
+apply plugin: 'java-library'
 apply from: "${rootDir}/gradle/abstract-library.gradle"
 
 // Include the generated Version file
@@ -30,10 +30,3 @@ sourceSets {
         }
     }
 }
-
-artifacts {
-    archives sourcesJar
-    archives javadocJar
-}
-
-apply from: "${rootDir}/gradle/install.gradle"

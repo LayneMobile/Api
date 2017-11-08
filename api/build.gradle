@@ -17,6 +17,6 @@
 apply from: "${rootDir}/gradle/kotlin-library.gradle"
 
 dependencies {
-    compile project(':result')
-    compile project(':request')
+    api project(':result')
+    api project(':request')
 }

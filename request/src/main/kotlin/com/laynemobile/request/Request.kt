@@ -83,8 +83,8 @@ sealed class Request<T : Any> {
 
     fun toSingle(): Single<T> = when (this) {
         is AsSingle -> delegate
-        is AsObservable -> delegate.toSingle()
-        is AsFlowable -> delegate.toSingle()
+        is AsObservable -> delegate.singleOrError()
+        is AsFlowable -> delegate.singleOrError()
         is AsDeferred -> Single.defer { supplier().toSingle() }
     }
 
@@ -104,8 +104,8 @@ sealed class Request<T : Any> {
 
     fun toCompletable(): Completable = when (this) {
         is AsSingle -> delegate.toCompletable()
-        is AsObservable -> delegate.toCompletable()
-        is AsFlowable -> delegate.toCompletable()
+        is AsObservable -> delegate.ignoreElements()
+        is AsFlowable -> delegate.ignoreElements()
         is AsDeferred -> Completable.defer { supplier().toCompletable() }
     }
 
@@ -160,9 +160,7 @@ sealed class Request<T : Any> {
     class AsDeferred<T : Any>
     internal constructor(
             internal val supplier: () -> Request<T>
-    ) : Request<T>(), DeferredRequest<T> {
-
-    }
+    ) : Request<T>(), DeferredRequest<T>
 
     companion object {
         fun <T : Any> just(item: T): Request<T> {
@@ -191,7 +189,7 @@ sealed class Request<T : Any> {
 
         fun <T : Any> create(
                 source: FlowableOnSubscribe<T>,
-                mode: FlowableEmitter.BackpressureMode = FlowableEmitter.BackpressureMode.BUFFER
+                mode: BackpressureStrategy = BackpressureStrategy.BUFFER
         ): Request<T> {
             return AsFlowable(source.toFlowable(mode))
         }
@@ -227,13 +225,13 @@ fun <T : Any> ObservableOnSubscribe<T>.toRequest(): Request<T> = Request.from(to
 fun <T : Any> Flowable<T>.toRequest(): Request<T> = Request.from(this)
 
 fun <T : Any> FlowableOnSubscribe<T>.toFlowable(
-        mode: FlowableEmitter.BackpressureMode = FlowableEmitter.BackpressureMode.BUFFER
+        mode: BackpressureStrategy = BackpressureStrategy.BUFFER
 ): Flowable<T> {
     return Flowable.create(this, mode)
 }
 
 fun <T : Any> FlowableOnSubscribe<T>.toRequest(
-        mode: FlowableEmitter.BackpressureMode = FlowableEmitter.BackpressureMode.BUFFER
+        mode: BackpressureStrategy = BackpressureStrategy.BUFFER
 ): Request<T> {
     return Request.from(toFlowable(mode))
 }

@@ -23,5 +23,5 @@ import java.util.*
 fun <T : Any> List<T?>.copy(): List<T> = when (size) {
     0 -> emptyList()
     1 -> this[0]?.let { listOf(it) } ?: emptyList()
-    else -> filterNotNullTo(ArrayList<T>(size))
+    else -> filterNotNullTo(ArrayList(size))
 }

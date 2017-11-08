@@ -17,6 +17,6 @@
 apply from: "${rootDir}/gradle/kotlin-library.gradle"
 
 dependencies {
-    compile project(':api')
-    compile "com.squareup.retrofit2:retrofit:${appRetrofitVersion}"
+    api project(':api')
+    implementation "com.squareup.retrofit2:retrofit:${appRetrofitVersion}"
 }

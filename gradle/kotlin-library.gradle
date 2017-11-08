@@ -18,9 +18,5 @@ apply from: "${rootDir}/gradle/java-library.gradle"
 apply plugin: 'kotlin'
 
 dependencies {
-    compile "org.jetbrains.kotlin:kotlin-stdlib:${appKotlinVersion}"
-}
-
-sourceSets {
-    main.java.srcDirs += 'src/main/kotlin'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:${kotlinVersion}"
 }

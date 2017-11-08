@@ -17,5 +17,5 @@
 apply from: "${rootDir}/gradle/kotlin-library.gradle"
 
 dependencies {
-    compile project(':util')
+    implementation project(':util')
 }

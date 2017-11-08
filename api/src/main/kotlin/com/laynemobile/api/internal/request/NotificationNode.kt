@@ -72,7 +72,7 @@ internal fun <T : Any> NotificationNode<T>?.current(): Notification<T>? {
 
 internal inline fun <T : Any, R : Any?> Notification<T>.fold(
         onNext: (T) -> R,
-        onError: (Throwable) -> R,
+        onError: (Throwable?) -> R,
         onComplete: () -> R
 ): R = when {
     isOnError -> onError(error)
@@ -86,9 +86,9 @@ internal inline fun <T : Any, R : Any?> Notification<T>.fold(
 
 internal inline fun <T : Any> Notification<T>.foldFinished(
         onNext: (T) -> Unit,
-        onError: (Throwable) -> Unit,
+        onError: (Throwable?) -> Unit,
         onComplete: () -> Unit
-): Boolean = this?.fold({
+): Boolean = this.fold({
     onNext(it)
     false
 }, {
